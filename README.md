@@ -5,7 +5,5 @@
   </picture>
 </a>
 
----
-
 **Original work by [Andrew Grant (Andrew6rant)](https://github.com/Andrew6rant), 2022-2025**  
 *Adapted by [Jacob Kanfer (Technical-1)](https://github.com/Technical-1), 2025*
