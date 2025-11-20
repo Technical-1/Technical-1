@@ -366,6 +366,7 @@ def find_and_replace(root, element_id, new_text):
     """
     element = root.find(f".//*[@id='{element_id}']")
     if element is not None:
+        element.text = None  # Clear existing text first
         element.text = new_text
 
 
