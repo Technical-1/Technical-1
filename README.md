@@ -1,7 +1,7 @@
 <a href="https://github.com/Technical-1/Technical-1">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Technical-1/Technical-1/main/dark_mode_simple.svg">
-    <img alt="Jacob Kanfer's GitHub Profile README" src="https://raw.githubusercontent.com/Technical-1/Technical-1/main/light_mode_simple.svg">
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Technical-1/Technical-1/main/compact/dark_mode_simple.svg">
+    <img alt="Jacob Kanfer's GitHub Profile README" src="https://raw.githubusercontent.com/Technical-1/Technical-1/main/compact/light_mode_simple.svg">
   </picture>
 </a>
 
