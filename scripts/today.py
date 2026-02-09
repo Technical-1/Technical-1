@@ -40,6 +40,18 @@ def format_plural(unit):
     return 's' if unit != 1 else ''
 
 
+def abbreviate_number(num, suffix=''):
+    """
+    Abbreviates large numbers to K/M format for OG image display
+    e.g. 20397754 -> '20.4M', 581234 -> '581.2K', 62 -> '62'
+    """
+    if num >= 1_000_000:
+        return f'{num / 1_000_000:.1f}M{suffix}'
+    elif num >= 1_000:
+        return f'{num / 1_000:.1f}K{suffix}'
+    return f'{num:,}{suffix}'
+
+
 def simple_request(func_name, query, variables):
     """
     Returns a request, or raises an Exception if the response does not succeed.
@@ -370,6 +382,64 @@ def find_and_replace(root, element_id, new_text):
         element.text = new_text
 
 
+def html_overwrite(filename, repo_data, commit_data, star_data, loc_data):
+    """
+    Updates og-preview.html with current GitHub stats using regex replacement.
+    Mirrors the pattern of svg_overwrite() but targets HTML elements by id attribute.
+    loc_data is [additions_str, deletions_str, net_str] with comma-formatted strings.
+    """
+    import re
+    with open(filename, 'r', encoding='utf-8') as f:
+        html = f.read()
+
+    additions = int(loc_data[0].replace(',', ''))
+    deletions = int(loc_data[1].replace(',', ''))
+    net_loc = int(loc_data[2].replace(',', ''))
+
+    stats = {
+        'stat-repos': f'{repo_data:,}',
+        'stat-commits': abbreviate_number(commit_data),
+        'stat-stars': f'{star_data:,}',
+        'stat-loc-net': abbreviate_number(net_loc),
+        'stat-loc-add': abbreviate_number(additions, '++'),
+        'stat-loc-del': abbreviate_number(deletions, '--'),
+    }
+
+    for stat_id, value in stats.items():
+        html = re.sub(
+            f'(<[^>]*id="{stat_id}"[^>]*>)[^<]*(</)',
+            rf'\g<1>{value}\2',
+            html
+        )
+
+    with open(filename, 'w', encoding='utf-8') as f:
+        f.write(html)
+
+
+def render_og_image(html_path, output_path):
+    """
+    Renders og-preview.html to a 2x retina PNG using Playwright.
+    Waits for Google Fonts to load before capturing.
+    """
+    from playwright.sync_api import sync_playwright
+
+    abs_path = os.path.abspath(html_path)
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True)
+        page = browser.new_page(
+            viewport={'width': 1200, 'height': 630},
+            device_scale_factor=2
+        )
+        page.goto(f'file://{abs_path}')
+        page.wait_for_load_state('networkidle')
+        page.evaluate_handle('document.fonts.ready')
+        page.wait_for_timeout(500)
+
+        card = page.query_selector('.og-card')
+        card.screenshot(path=output_path)
+        browser.close()
+
+
 def commit_counter(comment_size):
     """
     Counts up my total commits, using the cache file created by cache_builder.
@@ -482,6 +552,10 @@ if __name__ == '__main__':
     svg_overwrite('full/light_mode.svg', commit_data, star_data, repo_data, contrib_data, follower_data, total_loc[:-1])
     svg_overwrite('compact/dark_mode_simple.svg', commit_data, star_data, repo_data, contrib_data, follower_data, total_loc[:-1])
     svg_overwrite('compact/light_mode_simple.svg', commit_data, star_data, repo_data, contrib_data, follower_data, total_loc[:-1])
+
+    # Update and render OG preview image
+    html_overwrite('og-preview.html', repo_data, commit_data, star_data, total_loc[:-1])
+    render_og_image('og-preview.html', '.portfolio/preview.png')
 
     # move cursor to override 'Calculation times:' with 'Total function time:' and the total function time, then move cursor back
     print('\033[F\033[F\033[F\033[F\033[F\033[F\033[F',

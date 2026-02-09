@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>OG Image Preview</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0d1117;
+    font-family: 'JetBrains Mono', 'Consolas', monospace;
+  }
+
+  /* The OG image — 1200x630 standard */
+  .og-card {
+    width: 1200px;
+    height: 630px;
+    background: #1a1d24;
+    border-radius: 14px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── Title bar ── */
+  .title-bar {
+    background: #14161c;
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    flex-shrink: 0;
+  }
+  .dot { width: 14px; height: 14px; border-radius: 50%; }
+  .dot-red { background: #ff5f56; }
+  .dot-yellow { background: #ffbd2e; }
+  .dot-green { background: #27c93f; }
+  .title-text {
+    color: #8b8fa3;
+    font-size: 20px;
+    margin-left: 10px;
+  }
+
+  /* ── Main content ── */
+  .content {
+    display: flex;
+    flex: 1;
+    padding: 28px 44px 20px 44px;
+    gap: 44px;
+    overflow: hidden;
+  }
+
+  /* ── Left: ASCII art column ── */
+  .ascii-col {
+    flex-shrink: 0;
+    width: 290px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+  }
+  .ascii-art {
+    font-size: 7.8px;
+    line-height: 1.15;
+    color: #555a6e;
+    white-space: pre;
+    letter-spacing: 0.2px;
+  }
+  .ascii-label {
+    color: #555a6e;
+    font-size: 16px;
+    letter-spacing: 3px;
+  }
+
+  /* ── Right: Info column ── */
+  .info-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  /* Name heading */
+  .name {
+    font-size: 90px;
+    font-weight: 400;
+    font-style: italic;
+    color: #c8cdd8;
+    line-height: 1.05;
+  }
+
+  /* Divider line */
+  .hr {
+    width: 100%;
+    height: 1.5px;
+    background: #3d4150;
+    margin: 14px 0 18px;
+  }
+
+  /* Info rows: Role, Focus, Website */
+  .info-row {
+    font-size: 26px;
+    line-height: 1.55;
+    white-space: nowrap;
+  }
+  .key { color: #e0944e; }
+  .dots { color: #555a6e; }
+  .val { color: #c8cdd8; }
+
+  /* Section headers */
+  .section {
+    font-size: 22px;
+    color: #c8cdd8;
+    margin-top: 12px;
+    margin-bottom: 7px;
+  }
+
+  /* Badge rows */
+  .badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .badge {
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-size: 18px;
+    line-height: 1.4;
+  }
+  .badge-lang {
+    color: #c8cdd8;
+    border: 1.5px solid #555a6e;
+  }
+  .badge-stack {
+    color: #4eba5a;
+    border: 1.5px solid #3a6b3a;
+  }
+
+  /* ── Bottom stats bar ── */
+  .stats-bar {
+    background: #14161c;
+    padding: 13px 44px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    font-size: 20px;
+  }
+  .stats-left {
+    display: flex;
+    gap: 18px;
+  }
+  .sl { color: #757a8c; }
+  .sv { color: #c8cdd8; }
+  .sg { color: #4eba5a; }
+  .sr { color: #e05252; }
+  .stats-right {
+    color: #454a5a;
+    font-size: 18px;
+  }
+</style>
+</head>
+<body>
+
+<div class="og-card">
+
+  <!-- Title bar -->
+  <div class="title-bar">
+    <div class="dot dot-red"></div>
+    <div class="dot dot-yellow"></div>
+    <div class="dot dot-green"></div>
+    <span class="title-text">jacob@kanfer ~ github-profile</span>
+  </div>
+
+  <!-- Main content -->
+  <div class="content">
+
+    <!-- Left: ASCII art -->
+    <div class="ascii-col">
+      <pre class="ascii-art">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@%%%
+%%@#=====================================#@%%
+%%@+                                     +@%%
+%%@*..........:::::::::::...... .:::::::::-:.
+%%@* .     . :@%%%%%%%%%%. . . :%%%%%%%%%@#.=
+%%@* .     . :@%%%%%%%%@%. .. :%@%%%%%%%@%.=@
+%%@* .     . :@%%%%%%%%@%. . .#@%%%%%%%@#.=@%
+%%@* .     . :@%%%%%%%%@%. ..#@%%%%%%%@%.=@%%
+%%@* .     . :@%%%%%%%%@%.. *@%%%%%%%@#. *@%%
+%%@* .     . :@%%%%%%%%@%. +@%%%%%%%@#. .+@%%
+%%@* .     . :@%%%%%%%%@% =@%%%%%%%@#. . +@%%
+%%@* .     . :@%%%%%%%%@#=@%%%%%%%@#. .. +@%%
+%%@* .     . :@%%%%%%%%%%%%%%%%%%@#. . . +@%%
+%%@+........ :@%%%%%%%%%%%%%%%%%%@- .  . +@%%
+@@@* .     . :@%%%%%%%%%%%%%%%%%%%%- . . +@%%
+---:........ :@%%%%%%%%%%%@%%%%%%%@%- .. +@%%
+#########%#. :@%%%%%%%%@#:%@%%%%%%%@%- . +@%%
+@@@@@@@@@@%. :@%%%%%%%%@% :%@%%%%%%%%@- .+@%%
+%%%%%%%%%%%..-@%%%%%%%%@%. :%@%%%%%%%%@- *@%%
+%%%%%%%%%@%. :@%%%%%%%%@%.. .#@%%%%%%%%@-:@@%
+@@%%%%%%%%%**#%%%%%%%%%@%. . .#@%%%%%%%%@-:%@
+-*@@@%%%%%%@@@%%%%%%%%%@%. .. .#@%%%%%%%%@-:%
++-:+%@@%%%%%%%%%%%%%%%%@%. . . .#@%%%%%%%%@-:
+@@#-.-*%%%%%%%%%%%%%%%%%%. .  . .#@%%%%%%%%%=
+%%@*   ::::::::::::::::::.........::::::::-:-
+%%@+                                     +@%%
+%%@#=====================================#@%%
+%%%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</pre>
+      <span class="ascii-label">TECHNICAL-1</span>
+    </div>
+
+    <!-- Right: Info -->
+    <div class="info-col">
+      <div class="name">jacob@kanfer</div>
+      <div class="hr"></div>
+
+      <div class="info-row">
+        <span class="key">Role</span> <span class="dots">........</span> <span class="val">Software Engineer</span>
+      </div>
+      <div class="info-row">
+        <span class="key">Focus</span> <span class="dots">.......</span> <span class="val">AI Agents, Full Stack, Data</span>
+      </div>
+      <div class="info-row">
+        <span class="key">Website</span> <span class="dots">......</span> <span class="val">jacobkanfer.com</span>
+      </div>
+
+      <div class="section">- Languages</div>
+      <div class="badges">
+        <span class="badge badge-lang">Python</span>
+        <span class="badge badge-lang">JavaScript</span>
+        <span class="badge badge-lang">TypeScript</span>
+        <span class="badge badge-lang">Rust</span>
+        <span class="badge badge-lang">Java</span>
+        <span class="badge badge-lang">C++</span>
+        <span class="badge badge-lang">Go</span>
+        <span class="badge badge-lang">Swift</span>
+      </div>
+
+      <div class="section">- Stack</div>
+      <div class="badges">
+        <span class="badge badge-stack">React</span>
+        <span class="badge badge-stack">Next.js</span>
+        <span class="badge badge-stack">Node.js</span>
+        <span class="badge badge-stack">AWS</span>
+        <span class="badge badge-stack">Firebase</span>
+        <span class="badge badge-stack">Docker</span>
+        <span class="badge badge-stack">TensorFlow</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Bottom stats bar -->
+  <div class="stats-bar">
+    <div class="stats-left">
+      <span><span class="sl">Repos:</span> <span class="sv" id="stat-repos">80</span></span>
+      <span><span class="sl">Commits:</span> <span class="sv" id="stat-commits">1,474</span></span>
+      <span><span class="sl">Stars:</span> <span class="sv" id="stat-stars">62</span></span>
+      <span><span class="sl">LOC:</span> <span class="sv" id="stat-loc-net">19.8M</span> (<span class="sg" id="stat-loc-add">20.4M++</span>, <span class="sr" id="stat-loc-del">581K--</span>)</span>
+    </div>
+    <div class="stats-right">github.com/Technical-1</div>
+  </div>
+
+</div>
+
+</body>
+</html>
