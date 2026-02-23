@@ -160,7 +160,16 @@ def recursive_loc(owner, repo_name, data, cache_comment, addition_total=0, delet
     # Small delay to avoid rate limiting and gateway errors
     if cursor is not None:
         time.sleep(0.75)  # 750ms delay between paginated requests
-    request = requests.post('https://api.github.com/graphql', json={'query': query, 'variables':variables}, headers=HEADERS, timeout=30) # I cannot use simple_request(), because I want to save the file before raising Exception
+    try:
+        request = requests.post('https://api.github.com/graphql', json={'query': query, 'variables':variables}, headers=HEADERS, timeout=30) # I cannot use simple_request(), because I want to save the file before raising Exception
+    except (requests.exceptions.ConnectionError, requests.exceptions.ChunkedEncodingError, requests.exceptions.Timeout) as e:
+        if retry_count < 5:
+            wait_time = (2 ** retry_count) * 3  # Exponential backoff: 3s, 6s, 12s, 24s, 48s
+            print(f'Network error for {owner}/{repo_name}, retrying in {wait_time}s (attempt {retry_count + 1}/5)...')
+            time.sleep(wait_time)
+            return recursive_loc(owner, repo_name, data, cache_comment, addition_total, deletion_total, my_commits, cursor, retry_count + 1)
+        force_close_file(data, cache_comment)
+        raise Exception(f'recursive_loc() network error after 5 retries: {e}')
     if request.status_code == 200:
         if request.json()['data']['repository']['defaultBranchRef'] != None: # Only count commits if repo isn't empty
             return loc_counter_one_repo(owner, repo_name, data, cache_comment, request.json()['data']['repository']['defaultBranchRef']['target']['history'], addition_total, deletion_total, my_commits)
