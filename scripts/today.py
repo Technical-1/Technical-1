@@ -183,6 +183,14 @@ def recursive_loc(owner, repo_name, data, cache_comment, addition_total=0, delet
         print(f'{request.status_code} error for {owner}/{repo_name}, retrying in {wait_time}s (attempt {retry_count + 1}/5)...')
         time.sleep(wait_time)
         return recursive_loc(owner, repo_name, data, cache_comment, addition_total, deletion_total, my_commits, cursor, retry_count + 1)
+    # Persistent gateway error on this repo: GitHub's GraphQL backend can't compute the
+    # commit history within its timeout. Skip the repo for this run rather than failing
+    # the whole job. Returning 0 falls through to cache_builder's `except TypeError`,
+    # which records the repo as `0 0 0 0` so the next run will try again (self-healing
+    # if/when GitHub recovers).
+    if request.status_code in [502, 503, 504]:
+        print(f'WARNING: {owner}/{repo_name} returned {request.status_code} after 5 retries — skipping this repo for this run.')
+        return 0
     raise Exception('recursive_loc() has failed with a', request.status_code, request.text, QUERY_COUNT)
 
 
