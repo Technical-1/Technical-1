@@ -539,7 +539,7 @@ def render_languages_svg(buckets, mode, output_path):
     )
 
     total = sum(b['additions'] for b in buckets) or 1
-    top = max((b['additions'] for b in buckets), default=0)
+    top = max((b['additions'] for b in buckets if b['name'] != 'Other'), default=0)
 
     header = '<?xml version=\'1.0\' encoding=\'UTF-8\'?>\n'
     svg_open = (
@@ -586,11 +586,13 @@ def render_languages_svg(buckets, mode, output_path):
                 count_str = str(n)
             # Pad name to 14 chars so bars line up
             name_padded = b['name'][:14].ljust(14)
+            # Use mode-appropriate cc_color for Other bucket, b['color'] for real languages
+            bar_color = cc_color if b['name'] == 'Other' else b['color']
             rows.append(
                 f'<tspan x="250" y="{y}" class="cc">. </tspan>'
                 f'<tspan class="key">{name_padded}</tspan>'
                 f'<tspan> </tspan>'
-                f'<tspan fill="{b["color"]}">{bar}</tspan>'
+                f'<tspan fill="{bar_color}">{bar}</tspan>'
                 f'<tspan class="value"> {count_str}</tspan>'
                 f'<tspan class="cc"> ({pct}%)</tspan>'
             )
