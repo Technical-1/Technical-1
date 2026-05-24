@@ -12,7 +12,7 @@ import hashlib
 # Issues and pull requests permissions not needed at the moment, but may be used in the future
 HEADERS = {'authorization': 'token '+ os.environ['ACCESS_TOKEN']}
 USER_NAME = os.environ['USER_NAME'] # 'Andrew6rant'
-QUERY_COUNT = {'user_getter': 0, 'follower_getter': 0, 'graph_repos_stars': 0, 'recursive_loc': 0, 'graph_commits': 0, 'loc_query': 0}
+QUERY_COUNT = {'user_getter': 0, 'follower_getter': 0, 'graph_repos_stars': 0, 'recursive_loc': 0, 'graph_commits': 0, 'loc_query': 0, 'commits_by_month': 0}
 
 
 def daily_readme(birthday):
@@ -80,6 +80,41 @@ def graph_commits(start_date, end_date):
     variables = {'start_date': start_date,'end_date': end_date, 'login': USER_NAME}
     request = simple_request(graph_commits.__name__, query, variables)
     return int(request.json()['data']['user']['contributionsCollection']['contributionCalendar']['totalContributions'])
+
+
+def commits_by_month(months=12):
+    """
+    Fetch per-calendar-month contribution counts for the last `months` months
+    using GitHub's contributionsCollection. Returns a list of (yyyy_mm, count)
+    tuples ordered chronologically (oldest to newest).
+    """
+    query_count('commits_by_month')
+    end = datetime.datetime.now(datetime.timezone.utc)
+    start = end - relativedelta.relativedelta(months=months)
+    query = '''
+    query($login: String!, $from: DateTime!, $to: DateTime!) {
+        user(login: $login) {
+            contributionsCollection(from: $from, to: $to) {
+                contributionCalendar {
+                    weeks {
+                        contributionDays {
+                            date
+                            contributionCount
+                        }
+                    }
+                }
+            }
+        }
+    }'''
+    variables = {'login': USER_NAME, 'from': start.isoformat(), 'to': end.isoformat()}
+    request = simple_request(commits_by_month.__name__, query, variables)
+    weeks = request.json()['data']['user']['contributionsCollection']['contributionCalendar']['weeks']
+    by_month = {}
+    for week in weeks:
+        for day in week['contributionDays']:
+            ym = day['date'][:7]  # 'YYYY-MM'
+            by_month[ym] = by_month.get(ym, 0) + day['contributionCount']
+    return sorted(by_month.items())[-months:]
 
 
 def filter_owned_forks(edges):
@@ -478,7 +513,38 @@ def read_language_cache(filename):
     return buckets
 
 
-def render_languages_svg(buckets, mode, output_path):
+def write_commits_cache(monthly, filename):
+    """
+    Write the per-month commit counts to a sidecar cache file. Each row:
+    <yyyy_mm> <count>
+    """
+    with open(filename, 'w') as f:
+        for ym, count in monthly:
+            f.write(f'{ym} {count}\n')
+
+
+def read_commits_cache(filename):
+    """
+    Read the commits sidecar cache file back into a list of (yyyy_mm, count)
+    tuples ordered chronologically. Returns [] if the file doesn't exist.
+    """
+    try:
+        with open(filename) as f:
+            lines = f.readlines()
+    except FileNotFoundError:
+        return []
+    result = []
+    for line in lines:
+        parts = line.split()
+        if len(parts) >= 2:
+            try:
+                result.append((parts[0], int(parts[1])))
+            except ValueError:
+                continue
+    return result
+
+
+def render_languages_svg(commits, buckets, mode, output_path):
     """
     Render the languages-by-LOC bar chart SVG, matching the aesthetic of
     compact/*_simple.svg. mode is 'dark' or 'light'. buckets is the list
@@ -498,45 +564,46 @@ def render_languages_svg(buckets, mode, output_path):
         value_color = '#0a3069'
         cc_color = '#c2cfde'
 
-    # ASCII art panel — verbatim from compact/dark_mode_simple.svg lines 19-51.
-    # The fill on the parent <text> element changes by mode; the inner tspans are
-    # identical for both modes (animation uses parent fill via inheritance).
-    ASCII_PANEL = (
-        '<g transform="translate(5, 0) scale(0.5)">\n'
-        f'<text x="15" y="30" fill="{text}" class="ascii">\n'
-        '<tspan x="15" y="30">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%<animate attributeName="fill-opacity" values="0.5;1;0.5" dur="3s" repeatCount="indefinite"/></tspan>\n'
-        '<tspan x="15" y="46">%%%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@%%%<animate attributeName="fill-opacity" values="0.5;1;0.5" dur="3s" begin="0.1s" repeatCount="indefinite"/></tspan>\n'
-        '<tspan x="15" y="62">%%@#=====================================#@%%<animate attributeName="fill-opacity" values="0.5;1;0.5" dur="3s" begin="0.2s" repeatCount="indefinite"/></tspan>\n'
-        '<tspan x="15" y="78">%%@+                                     +@%%<animate attributeName="fill-opacity" values="0.5;1;0.5" dur="3s" begin="0.3s" repeatCount="indefinite"/></tspan>\n'
-        '<tspan x="15" y="94">%%@*..........:::::::::::...... .:::::::::-:.<animate attributeName="fill-opacity" values="0.5;1;0.5" dur="3s" begin="0.4s" repeatCount="indefinite"/></tspan>\n'
-        '<tspan x="15" y="110">%%@* .     . :@%%%%%%%%%%. . . :%%%%%%%%%@#.=<animate attributeName="fill-opacity" values="0.5;1;0.5" dur="3s" begin="0.5s" repeatCount="indefinite"/></tspan>\n'
-        '<tspan x="15" y="126">%%@* .     . :@%%%%%%%%@%. .. :%@%%%%%%%@%.=@<animate attributeName="fill-opacity" values="0.5;1;0.5" dur="3s" begin="0.6s" repeatCount="indefinite"/></tspan>\n'
-        '<tspan x="15" y="142">%%@* .     . :@%%%%%%%%@%. . .#@%%%%%%%@#.=@%<animate attributeName="fill-opacity" values="0.5;1;0.5" dur="3s" begin="0.7s" repeatCount="indefinite"/></tspan>\n'
-        '<tspan x="15" y="158">%%@* .     . :@%%%%%%%%@%. ..#@%%%%%%%@%.=@%%<animate attributeName="fill-opacity" values="0.5;1;0.5" dur="3s" begin="0.8s" repeatCount="indefinite"/></tspan>\n'
-        '<tspan x="15" y="174">%%@* .     . :@%%%%%%%%@%.. *@%%%%%%%@#. *@%%<animate attributeName="fill-opacity" values="0.5;1;0.5" dur="3s" begin="0.9s" repeatCount="indefinite"/></tspan>\n'
-        '<tspan x="15" y="190">%%@* .     . :@%%%%%%%%@%. +@%%%%%%%@#. .+@%%<animate attributeName="fill-opacity" values="0.5;1;0.5" dur="3s" begin="1.0s" repeatCount="indefinite"/></tspan>\n'
-        '<tspan x="15" y="206">%%@* .     . :@%%%%%%%%@% =@%%%%%%%@#. . +@%%<animate attributeName="fill-opacity" values="0.5;1;0.5" dur="3s" begin="1.1s" repeatCount="indefinite"/></tspan>\n'
-        '<tspan x="15" y="222">%%@* .     . :@%%%%%%%%@#=@%%%%%%%@#. .. +@%%<animate attributeName="fill-opacity" values="0.5;1;0.5" dur="3s" begin="1.2s" repeatCount="indefinite"/></tspan>\n'
-        '<tspan x="15" y="238">%%@* .     . :@%%%%%%%%%%%%%%%%%%@#. . . +@%%<animate attributeName="fill-opacity" values="0.5;1;0.5" dur="3s" begin="1.3s" repeatCount="indefinite"/></tspan>\n'
-        '<tspan x="15" y="254">%%@+........ :@%%%%%%%%%%%%%%%%%%@- .  . +@%%<animate attributeName="fill-opacity" values="0.5;1;0.5" dur="3s" begin="1.4s" repeatCount="indefinite"/></tspan>\n'
-        '<tspan x="15" y="270">@@@* .     . :@%%%%%%%%%%%%%%%%%%%%- . . +@%%<animate attributeName="fill-opacity" values="0.5;1;0.5" dur="3s" begin="1.5s" repeatCount="indefinite"/></tspan>\n'
-        '<tspan x="15" y="286">---:........ :@%%%%%%%%%%%@%%%%%%%@%- .. +@%%<animate attributeName="fill-opacity" values="0.5;1;0.5" dur="3s" begin="1.6s" repeatCount="indefinite"/></tspan>\n'
-        '<tspan x="15" y="302">#########%#. :@%%%%%%%%@#:%@%%%%%%%@%- . +@%%<animate attributeName="fill-opacity" values="0.5;1;0.5" dur="3s" begin="1.7s" repeatCount="indefinite"/></tspan>\n'
-        '<tspan x="15" y="318">@@@@@@@@@@%. :@%%%%%%%%@% :%@%%%%%%%%@- .+@%%<animate attributeName="fill-opacity" values="0.5;1;0.5" dur="3s" begin="1.8s" repeatCount="indefinite"/></tspan>\n'
-        '<tspan x="15" y="334">%%%%%%%%%%%..-@%%%%%%%%@%. :%@%%%%%%%%@- *@%%<animate attributeName="fill-opacity" values="0.5;1;0.5" dur="3s" begin="1.9s" repeatCount="indefinite"/></tspan>\n'
-        '<tspan x="15" y="350">%%%%%%%%%@%. :@%%%%%%%%@%.. .#@%%%%%%%%@-:@@%<animate attributeName="fill-opacity" values="0.5;1;0.5" dur="3s" begin="2.0s" repeatCount="indefinite"/></tspan>\n'
-        '<tspan x="15" y="366">@@%%%%%%%%%**#%%%%%%%%%@%. . .#@%%%%%%%%@-:%@<animate attributeName="fill-opacity" values="0.5;1;0.5" dur="3s" begin="2.1s" repeatCount="indefinite"/></tspan>\n'
-        '<tspan x="15" y="382">-*@@@%%%%%%@@@%%%%%%%%%@%. .. .#@%%%%%%%%@-:%<animate attributeName="fill-opacity" values="0.5;1;0.5" dur="3s" begin="2.2s" repeatCount="indefinite"/></tspan>\n'
-        '<tspan x="15" y="398">+-:+%@@%%%%%%%%%%%%%%%%@%. . . .#@%%%%%%%%@-:<animate attributeName="fill-opacity" values="0.5;1;0.5" dur="3s" begin="2.3s" repeatCount="indefinite"/></tspan>\n'
-        '<tspan x="15" y="414">@@#-.-*%%%%%%%%%%%%%%%%%%. .  . .#@%%%%%%%%%=<animate attributeName="fill-opacity" values="0.5;1;0.5" dur="3s" begin="2.4s" repeatCount="indefinite"/></tspan>\n'
-        '<tspan x="15" y="430">%%@*   ::::::::::::::::::.........::::::::-:-<animate attributeName="fill-opacity" values="0.5;1;0.5" dur="3s" begin="2.5s" repeatCount="indefinite"/></tspan>\n'
-        '<tspan x="15" y="446">%%@+                                     +@%%<animate attributeName="fill-opacity" values="0.5;1;0.5" dur="3s" begin="2.6s" repeatCount="indefinite"/></tspan>\n'
-        '<tspan x="15" y="462">%%@#=====================================#@%%<animate attributeName="fill-opacity" values="0.5;1;0.5" dur="3s" begin="2.7s" repeatCount="indefinite"/></tspan>\n'
-        '<tspan x="15" y="478">%%%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@%%%<animate attributeName="fill-opacity" values="0.5;1;0.5" dur="3s" begin="2.8s" repeatCount="indefinite"/></tspan>\n'
-        '<tspan x="15" y="494">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%<animate attributeName="fill-opacity" values="0.5;1;0.5" dur="3s" begin="2.9s" repeatCount="indefinite"/></tspan>\n'
-        '</text>\n'
-        '</g>\n'
-    )
+    # LEFT PANEL: commits-per-month sparkline (x=15 to x~315). Uses SVG <rect>
+    # bars in GitHub-contribution-graph green; month-initial labels below.
+    commits_color = '#3fb950' if mode == 'dark' else '#1a7f37'
+    left_parts = [f'<text x="15" y="30" fill="{text}">']
+    left_parts.append('<tspan x="15" y="50">- Commits / month</tspan> —————————————————————')
+    left_parts.append('</text>')
+    if commits:
+        max_commits = max(c for _, c in commits) or 1
+        month_letters = ['J','F','M','A','M','J','J','A','S','O','N','D']
+        # 12 bars in 25px slots, bar width 16, padding 4.5 each side
+        for i, (ym, count) in enumerate(commits):
+            bar_h = round(115 * count / max_commits) if count > 0 else 0
+            x_bar = 20 + i * 25
+            y_top = 195 - bar_h
+            left_parts.append(f'<rect x="{x_bar}" y="{y_top}" width="16" height="{max(bar_h, 1)}" fill="{commits_color}" rx="2"/>')
+        # Month-initial labels centered under each bar
+        left_parts.append(f'<text fill="{text}" class="cc">')
+        for i, (ym, _) in enumerate(commits):
+            month_num = int(ym.split('-')[1])
+            letter = month_letters[month_num - 1]
+            label_x = 20 + i * 25 + 8
+            left_parts.append(f'<tspan x="{label_x}" y="215" text-anchor="middle">{letter}</tspan>')
+        left_parts.append('</text>')
+        # Total in the existing dot-leader style
+        total_commits = sum(c for _, c in commits)
+        left_parts.append(
+            f'<text x="15" y="240" fill="{text}">'
+            f'<tspan x="15" y="240" class="cc">. </tspan>'
+            f'<tspan class="key">Last 12mo: </tspan>'
+            f'<tspan class="value">{total_commits:,}</tspan>'
+            f'<tspan class="cc"> commits</tspan>'
+            f'</text>'
+        )
+    else:
+        left_parts.append(
+            f'<text x="15" y="80" fill="{text}">'
+            f'<tspan x="15" y="80" class="cc">. (no commit data)</tspan>'
+            f'</text>'
+        )
+    LEFT_PANEL = '\n'.join(left_parts) + '\n'
 
     total = sum(b['additions'] for b in buckets) or 1
     top = max((b['additions'] for b in buckets if b['name'] != 'Other'), default=0)
@@ -564,12 +631,12 @@ def render_languages_svg(buckets, mode, output_path):
     )
     rect = f'<rect width="850" height="255px" fill="{bg}" rx="15"/>\n'
 
-    # Right-panel header — positioned at x=250 matching the existing widget layout
-    rows = [f'<text x="250" y="30" fill="{text}">']
-    rows.append('<tspan x="250" y="50">- Languages by LOC</tspan> ————————————————————————————————————————————')
+    # RIGHT PANEL: languages chart at x=340 (right half of split layout)
+    rows = [f'<text x="340" y="30" fill="{text}">']
+    rows.append('<tspan x="340" y="50">- Languages by LOC</tspan> ———————————————————————————————')
 
     if not buckets:
-        rows.append('<tspan x="250" y="80" class="cc">. (no language data)</tspan>')
+        rows.append('<tspan x="340" y="80" class="cc">. (no language data)</tspan>')
     else:
         y = 70
         for b in buckets:
@@ -589,7 +656,7 @@ def render_languages_svg(buckets, mode, output_path):
             # Use mode-appropriate cc_color for Other bucket, b['color'] for real languages
             bar_color = cc_color if b['name'] == 'Other' else b['color']
             rows.append(
-                f'<tspan x="250" y="{y}" class="cc">. </tspan>'
+                f'<tspan x="340" y="{y}" class="cc">. </tspan>'
                 f'<tspan class="key">{name_padded}</tspan>'
                 f'<tspan> </tspan>'
                 f'<tspan fill="{bar_color}">{bar}</tspan>'
@@ -599,7 +666,7 @@ def render_languages_svg(buckets, mode, output_path):
             y += 20
 
     rows.append('</text>')
-    body = ASCII_PANEL + '\n'.join(rows) + '\n</svg>\n'
+    body = LEFT_PANEL + '\n'.join(rows) + '\n</svg>\n'
     with open(output_path, 'w') as f:
         f.write(header + svg_open + style + rect + body)
 
@@ -859,11 +926,17 @@ if __name__ == '__main__':
     svg_overwrite('compact/dark_mode_simple.svg', commit_data, star_data, repo_data, contrib_data, follower_data, total_loc[:-1])
     svg_overwrite('compact/light_mode_simple.svg', commit_data, star_data, repo_data, contrib_data, follower_data, total_loc[:-1])
 
-    # Languages-by-LOC chart, paired with the compact stats SVGs above
-    langs_filename = 'cache/' + hashlib.sha256(USER_NAME.encode('utf-8')).hexdigest() + '_langs.txt'
+    # Split widget: commits-per-month sparkline (left) + languages-by-LOC chart (right).
+    user_hash = hashlib.sha256(USER_NAME.encode('utf-8')).hexdigest()
+    langs_filename = 'cache/' + user_hash + '_langs.txt'
+    commits_filename = 'cache/' + user_hash + '_commits.txt'
+    monthly, monthly_time = perf_counter(commits_by_month, 12)
+    formatter('commits/month', monthly_time)
+    write_commits_cache(monthly, commits_filename)
     language_buckets = read_language_cache(langs_filename)
-    render_languages_svg(language_buckets, 'dark', 'compact/dark_mode_languages.svg')
-    render_languages_svg(language_buckets, 'light', 'compact/light_mode_languages.svg')
+    commits_data = read_commits_cache(commits_filename)
+    render_languages_svg(commits_data, language_buckets, 'dark', 'compact/dark_mode_languages.svg')
+    render_languages_svg(commits_data, language_buckets, 'light', 'compact/light_mode_languages.svg')
 
     # Update and render OG preview image
     html_overwrite('og-preview.html', repo_data, commit_data, star_data, total_loc[:-1])
