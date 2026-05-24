@@ -488,9 +488,55 @@ def render_languages_svg(buckets, mode, output_path):
     if mode == 'dark':
         bg = '#161b22'
         text = '#c9d1d9'
+        key_color = '#ffa657'
+        value_color = '#a5d6ff'
+        cc_color = '#616e7f'
     else:
         bg = '#f6f8fa'
         text = '#24292f'
+        key_color = '#953800'
+        value_color = '#0a3069'
+        cc_color = '#c2cfde'
+
+    # ASCII art panel — verbatim from compact/dark_mode_simple.svg lines 19-51.
+    # The fill on the parent <text> element changes by mode; the inner tspans are
+    # identical for both modes (animation uses parent fill via inheritance).
+    ASCII_PANEL = (
+        '<g transform="translate(5, 0) scale(0.5)">\n'
+        f'<text x="15" y="30" fill="{text}" class="ascii">\n'
+        '<tspan x="15" y="30">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%<animate attributeName="fill-opacity" values="0.5;1;0.5" dur="3s" repeatCount="indefinite"/></tspan>\n'
+        '<tspan x="15" y="46">%%%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@%%%<animate attributeName="fill-opacity" values="0.5;1;0.5" dur="3s" begin="0.1s" repeatCount="indefinite"/></tspan>\n'
+        '<tspan x="15" y="62">%%@#=====================================#@%%<animate attributeName="fill-opacity" values="0.5;1;0.5" dur="3s" begin="0.2s" repeatCount="indefinite"/></tspan>\n'
+        '<tspan x="15" y="78">%%@+                                     +@%%<animate attributeName="fill-opacity" values="0.5;1;0.5" dur="3s" begin="0.3s" repeatCount="indefinite"/></tspan>\n'
+        '<tspan x="15" y="94">%%@*..........:::::::::::...... .:::::::::-:.<animate attributeName="fill-opacity" values="0.5;1;0.5" dur="3s" begin="0.4s" repeatCount="indefinite"/></tspan>\n'
+        '<tspan x="15" y="110">%%@* .     . :@%%%%%%%%%%. . . :%%%%%%%%%@#.=<animate attributeName="fill-opacity" values="0.5;1;0.5" dur="3s" begin="0.5s" repeatCount="indefinite"/></tspan>\n'
+        '<tspan x="15" y="126">%%@* .     . :@%%%%%%%%@%. .. :%@%%%%%%%@%.=@<animate attributeName="fill-opacity" values="0.5;1;0.5" dur="3s" begin="0.6s" repeatCount="indefinite"/></tspan>\n'
+        '<tspan x="15" y="142">%%@* .     . :@%%%%%%%%@%. . .#@%%%%%%%@#.=@%<animate attributeName="fill-opacity" values="0.5;1;0.5" dur="3s" begin="0.7s" repeatCount="indefinite"/></tspan>\n'
+        '<tspan x="15" y="158">%%@* .     . :@%%%%%%%%@%. ..#@%%%%%%%@%.=@%%<animate attributeName="fill-opacity" values="0.5;1;0.5" dur="3s" begin="0.8s" repeatCount="indefinite"/></tspan>\n'
+        '<tspan x="15" y="174">%%@* .     . :@%%%%%%%%@%.. *@%%%%%%%@#. *@%%<animate attributeName="fill-opacity" values="0.5;1;0.5" dur="3s" begin="0.9s" repeatCount="indefinite"/></tspan>\n'
+        '<tspan x="15" y="190">%%@* .     . :@%%%%%%%%@%. +@%%%%%%%@#. .+@%%<animate attributeName="fill-opacity" values="0.5;1;0.5" dur="3s" begin="1.0s" repeatCount="indefinite"/></tspan>\n'
+        '<tspan x="15" y="206">%%@* .     . :@%%%%%%%%@% =@%%%%%%%@#. . +@%%<animate attributeName="fill-opacity" values="0.5;1;0.5" dur="3s" begin="1.1s" repeatCount="indefinite"/></tspan>\n'
+        '<tspan x="15" y="222">%%@* .     . :@%%%%%%%%@#=@%%%%%%%@#. .. +@%%<animate attributeName="fill-opacity" values="0.5;1;0.5" dur="3s" begin="1.2s" repeatCount="indefinite"/></tspan>\n'
+        '<tspan x="15" y="238">%%@* .     . :@%%%%%%%%%%%%%%%%%%@#. . . +@%%<animate attributeName="fill-opacity" values="0.5;1;0.5" dur="3s" begin="1.3s" repeatCount="indefinite"/></tspan>\n'
+        '<tspan x="15" y="254">%%@+........ :@%%%%%%%%%%%%%%%%%%@- .  . +@%%<animate attributeName="fill-opacity" values="0.5;1;0.5" dur="3s" begin="1.4s" repeatCount="indefinite"/></tspan>\n'
+        '<tspan x="15" y="270">@@@* .     . :@%%%%%%%%%%%%%%%%%%%%- . . +@%%<animate attributeName="fill-opacity" values="0.5;1;0.5" dur="3s" begin="1.5s" repeatCount="indefinite"/></tspan>\n'
+        '<tspan x="15" y="286">---:........ :@%%%%%%%%%%%@%%%%%%%@%- .. +@%%<animate attributeName="fill-opacity" values="0.5;1;0.5" dur="3s" begin="1.6s" repeatCount="indefinite"/></tspan>\n'
+        '<tspan x="15" y="302">#########%#. :@%%%%%%%%@#:%@%%%%%%%@%- . +@%%<animate attributeName="fill-opacity" values="0.5;1;0.5" dur="3s" begin="1.7s" repeatCount="indefinite"/></tspan>\n'
+        '<tspan x="15" y="318">@@@@@@@@@@%. :@%%%%%%%%@% :%@%%%%%%%%@- .+@%%<animate attributeName="fill-opacity" values="0.5;1;0.5" dur="3s" begin="1.8s" repeatCount="indefinite"/></tspan>\n'
+        '<tspan x="15" y="334">%%%%%%%%%%%..-@%%%%%%%%@%. :%@%%%%%%%%@- *@%%<animate attributeName="fill-opacity" values="0.5;1;0.5" dur="3s" begin="1.9s" repeatCount="indefinite"/></tspan>\n'
+        '<tspan x="15" y="350">%%%%%%%%%@%. :@%%%%%%%%@%.. .#@%%%%%%%%@-:@@%<animate attributeName="fill-opacity" values="0.5;1;0.5" dur="3s" begin="2.0s" repeatCount="indefinite"/></tspan>\n'
+        '<tspan x="15" y="366">@@%%%%%%%%%**#%%%%%%%%%@%. . .#@%%%%%%%%@-:%@<animate attributeName="fill-opacity" values="0.5;1;0.5" dur="3s" begin="2.1s" repeatCount="indefinite"/></tspan>\n'
+        '<tspan x="15" y="382">-*@@@%%%%%%@@@%%%%%%%%%@%. .. .#@%%%%%%%%@-:%<animate attributeName="fill-opacity" values="0.5;1;0.5" dur="3s" begin="2.2s" repeatCount="indefinite"/></tspan>\n'
+        '<tspan x="15" y="398">+-:+%@@%%%%%%%%%%%%%%%%@%. . . .#@%%%%%%%%@-:<animate attributeName="fill-opacity" values="0.5;1;0.5" dur="3s" begin="2.3s" repeatCount="indefinite"/></tspan>\n'
+        '<tspan x="15" y="414">@@#-.-*%%%%%%%%%%%%%%%%%%. .  . .#@%%%%%%%%%=<animate attributeName="fill-opacity" values="0.5;1;0.5" dur="3s" begin="2.4s" repeatCount="indefinite"/></tspan>\n'
+        '<tspan x="15" y="430">%%@*   ::::::::::::::::::.........::::::::-:-<animate attributeName="fill-opacity" values="0.5;1;0.5" dur="3s" begin="2.5s" repeatCount="indefinite"/></tspan>\n'
+        '<tspan x="15" y="446">%%@+                                     +@%%<animate attributeName="fill-opacity" values="0.5;1;0.5" dur="3s" begin="2.6s" repeatCount="indefinite"/></tspan>\n'
+        '<tspan x="15" y="462">%%@#=====================================#@%%<animate attributeName="fill-opacity" values="0.5;1;0.5" dur="3s" begin="2.7s" repeatCount="indefinite"/></tspan>\n'
+        '<tspan x="15" y="478">%%%@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@%%%<animate attributeName="fill-opacity" values="0.5;1;0.5" dur="3s" begin="2.8s" repeatCount="indefinite"/></tspan>\n'
+        '<tspan x="15" y="494">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%<animate attributeName="fill-opacity" values="0.5;1;0.5" dur="3s" begin="2.9s" repeatCount="indefinite"/></tspan>\n'
+        '</text>\n'
+        '</g>\n'
+    )
 
     total = sum(b['additions'] for b in buckets) or 1
     top = max((b['additions'] for b in buckets), default=0)
@@ -510,22 +556,22 @@ def render_languages_svg(buckets, mode, output_path):
         '-webkit-size-adjust: 109%;\n'
         'size-adjust: 109%;\n'
         '}\n'
-        '.key {fill: #ffa657;}\n'
-        '.value {fill: #a5d6ff;}\n'
-        '.cc {fill: #616e7f;}\n'
+        f'.key {{fill: {key_color};}}\n'
+        f'.value {{fill: {value_color};}}\n'
+        f'.cc {{fill: {cc_color};}}\n'
         'text, tspan {white-space: pre;}\n'
         '</style>\n'
     )
     rect = f'<rect width="850" height="255px" fill="{bg}" rx="15"/>\n'
 
-    # Right-panel header at the same y-offset as the existing GitHub Stats header
-    rows = [f'<text x="15" y="30" fill="{text}">']
-    rows.append('<tspan x="15" y="50">- Languages by LOC</tspan> ————————————————————————————————————————————')
+    # Right-panel header — positioned at x=250 matching the existing widget layout
+    rows = [f'<text x="250" y="30" fill="{text}">']
+    rows.append('<tspan x="250" y="50">- Languages by LOC</tspan> ————————————————————————————————————————————')
 
     if not buckets:
-        rows.append('<tspan x="15" y="80" class="cc">. (no language data)</tspan>')
+        rows.append('<tspan x="250" y="80" class="cc">. (no language data)</tspan>')
     else:
-        y = 80
+        y = 70
         for b in buckets:
             blocks = bar_blocks_for(b['additions'], top)
             bar = '█' * blocks + ' ' * (20 - blocks)
@@ -541,7 +587,7 @@ def render_languages_svg(buckets, mode, output_path):
             # Pad name to 14 chars so bars line up
             name_padded = b['name'][:14].ljust(14)
             rows.append(
-                f'<tspan x="15" y="{y}" class="cc">. </tspan>'
+                f'<tspan x="250" y="{y}" class="cc">. </tspan>'
                 f'<tspan class="key">{name_padded}</tspan>'
                 f'<tspan> </tspan>'
                 f'<tspan fill="{b["color"]}">{bar}</tspan>'
@@ -551,7 +597,7 @@ def render_languages_svg(buckets, mode, output_path):
             y += 20
 
     rows.append('</text>')
-    body = '\n'.join(rows) + '\n</svg>\n'
+    body = ASCII_PANEL + '\n'.join(rows) + '\n</svg>\n'
     with open(output_path, 'w') as f:
         f.write(header + svg_open + style + rect + body)
 
