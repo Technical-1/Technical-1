@@ -287,7 +287,13 @@ def cache_builder(edges, comment_size, force_cache, loc_add=0, loc_del=0):
     cache_comment = data[:comment_size] # save the comment block
     data = data[comment_size:] # remove those lines
     for index in range(len(edges)):
-        repo_hash, commit_count, *__ = data[index].split()
+        parts = data[index].split()
+        repo_hash, commit_count = parts[0], parts[1]
+        # Preserve prior LOC values for the SKIP fallback. flush_cache writes
+        # 5-field rows so these are safe to read; fall back to '0' just in case.
+        prev_my_commits = parts[2] if len(parts) > 2 else '0'
+        prev_add = parts[3] if len(parts) > 3 else '0'
+        prev_del = parts[4] if len(parts) > 4 else '0'
         if repo_hash == hashlib.sha256(edges[index]['node']['nameWithOwner'].encode('utf-8')).hexdigest():
             try:
                 live_total = edges[index]['node']['defaultBranchRef']['target']['history']['totalCount']
@@ -296,9 +302,11 @@ def cache_builder(edges, comment_size, force_cache, loc_add=0, loc_del=0):
                     owner, repo_name = edges[index]['node']['nameWithOwner'].split('/')
                     loc = recursive_loc(owner, repo_name, data, cache_comment)
                     if loc == 'SKIP':
-                        # Cache the live totalCount + 0 LOC so we don't re-query
-                        # this broken repo until it gets new commits.
-                        data[index] = repo_hash + ' ' + str(live_total) + ' 0 0 0\n'
+                        # Keep yesterday's LOC values; only update commit_count to
+                        # live_total. Zeroing here would corrupt the displayed total
+                        # when a known-good repo hits a temporary GitHub backend issue
+                        # (this caused a 20M → 4M regression on 2026-05-24).
+                        data[index] = ' '.join([repo_hash, str(live_total), prev_my_commits, prev_add, prev_del]) + '\n'
                     else:
                         data[index] = repo_hash + ' ' + str(live_total) + ' ' + str(loc[2]) + ' ' + str(loc[0]) + ' ' + str(loc[1]) + '\n'
             except TypeError: # If the repo is empty
