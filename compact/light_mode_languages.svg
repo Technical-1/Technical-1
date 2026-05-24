@@ -43,7 +43,7 @@ text, tspan {white-space: pre;}
 <tspan x="278" y="215" text-anchor="middle">A</tspan>
 <tspan x="303" y="215" text-anchor="middle">M</tspan>
 </text>
-<text x="15" y="240" fill="#24292f"><tspan x="15" y="240" class="cc">. </tspan><tspan class="key">Last 12mo: </tspan><tspan class="value">3,842</tspan><tspan class="cc"> commits</tspan></text>
+<text x="15" y="240" fill="#24292f"><tspan x="15" y="240" class="cc">. </tspan><tspan class="key">Last 12mo: </tspan><tspan class="value">3,843</tspan><tspan class="cc"> commits</tspan></text>
 <text x="340" y="30" fill="#24292f">
 <tspan x="340" y="50">- Languages by LOC</tspan> ———————————————————————————————
 <tspan x="340" y="70" class="cc">. </tspan><tspan class="key">Go            </tspan><tspan> </tspan><tspan fill="#00ADD8">████████████████████</tspan><tspan class="value"> 8.6M</tspan><tspan class="cc"> (61%)</tspan>
