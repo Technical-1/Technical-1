@@ -5,6 +5,13 @@
   </picture>
 </a>
 
+<a href="https://github.com/Technical-1/Technical-1">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Technical-1/Technical-1/main/compact/dark_mode_languages.svg">
+    <img alt="Jacob Kanfer's Top Languages by LOC" src="https://raw.githubusercontent.com/Technical-1/Technical-1/main/compact/light_mode_languages.svg">
+  </picture>
+</a>
+
 ## Technologies I've been learning and using
 
 **Languages:**
