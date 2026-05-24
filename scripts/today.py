@@ -468,8 +468,14 @@ def aggregate_languages(edges, data):
         totals[name][1] += additions
     # Sort by additions desc, top 6, collapse rest into Other
     ranked = sorted(totals.items(), key=lambda kv: kv[1][1], reverse=True)
-    top = ranked[:6]
-    rest = ranked[6:]
+    # Cap total rendered rows at 10. If more than 10 distinct languages, show
+    # top 9 plus a single 'Other' bucket so the row count stays at 10.
+    if len(ranked) > 10:
+        top = ranked[:9]
+        rest = ranked[9:]
+    else:
+        top = ranked
+        rest = []
     buckets = [{'name': n, 'color': c, 'additions': a} for n, (c, a) in top]
     if rest:
         buckets.append({'name': 'Other', 'color': '#616e7f', 'additions': sum(a for _, (_, a) in rest)})
@@ -569,17 +575,17 @@ def render_languages_svg(commits, buckets, mode, output_path):
     # LEFT PANEL: commits-per-month sparkline (x=15 to x~315). Uses SVG <rect>
     # bars in a lighter GitHub-contribution-graph green; month-initial labels below.
     commits_color = '#7ee787' if mode == 'dark' else '#40c463'
-    left_parts = [f'<text x="15" y="30" fill="{text}">']
-    left_parts.append('<tspan x="15" y="50">- Contributions / month</tspan> ———————')
+    left_parts = [f'<text x="15" y="20" fill="{text}">']
+    left_parts.append('<tspan x="15" y="30">- Contributions / month</tspan> ———————')
     left_parts.append('</text>')
     if commits:
         max_commits = max(c for _, c in commits) or 1
         month_letters = ['J','F','M','A','M','J','J','A','S','O','N','D']
         # 12 bars in 25px slots, bar width 16, padding 4.5 each side
         for i, (ym, count) in enumerate(commits):
-            bar_h = round(115 * count / max_commits) if count > 0 else 0
+            bar_h = round(135 * count / max_commits) if count > 0 else 0
             x_bar = 20 + i * 25
-            y_top = 195 - bar_h
+            y_top = 175 - bar_h
             left_parts.append(f'<rect x="{x_bar}" y="{y_top}" width="16" height="{max(bar_h, 1)}" fill="{commits_color}" rx="2"/>')
         # Month-initial labels centered under each bar
         left_parts.append(f'<text fill="{text}" class="cc">')
@@ -587,13 +593,13 @@ def render_languages_svg(commits, buckets, mode, output_path):
             month_num = int(ym.split('-')[1])
             letter = month_letters[month_num - 1]
             label_x = 20 + i * 25 + 8
-            left_parts.append(f'<tspan x="{label_x}" y="215" text-anchor="middle">{letter}</tspan>')
+            left_parts.append(f'<tspan x="{label_x}" y="195" text-anchor="middle">{letter}</tspan>')
         left_parts.append('</text>')
         # Total in the existing dot-leader style
         total_commits = sum(c for _, c in commits)
         left_parts.append(
-            f'<text x="15" y="240" fill="{text}">'
-            f'<tspan x="15" y="240" class="cc">. </tspan>'
+            f'<text x="15" y="225" fill="{text}">'
+            f'<tspan x="15" y="225" class="cc">. </tspan>'
             f'<tspan class="key">Last 12mo: </tspan>'
             f'<tspan class="value">{total_commits:,}</tspan>'
             f'<tspan class="cc"> contributions</tspan>'
@@ -601,8 +607,8 @@ def render_languages_svg(commits, buckets, mode, output_path):
         )
     else:
         left_parts.append(
-            f'<text x="15" y="80" fill="{text}">'
-            f'<tspan x="15" y="80" class="cc">. (no contribution data)</tspan>'
+            f'<text x="15" y="60" fill="{text}">'
+            f'<tspan x="15" y="60" class="cc">. (no contribution data)</tspan>'
             f'</text>'
         )
     LEFT_PANEL = '\n'.join(left_parts) + '\n'
@@ -634,13 +640,13 @@ def render_languages_svg(commits, buckets, mode, output_path):
     rect = f'<rect width="850" height="255px" fill="{bg}" rx="15"/>\n'
 
     # RIGHT PANEL: languages chart at x=340 (right half of split layout)
-    rows = [f'<text x="340" y="30" fill="{text}">']
-    rows.append('<tspan x="340" y="50">- Languages by LOC</tspan> ———————————————————————————————')
+    rows = [f'<text x="340" y="20" fill="{text}">']
+    rows.append('<tspan x="340" y="30">- Languages by LOC</tspan> ———————————————————————————————')
 
     if not buckets:
-        rows.append('<tspan x="340" y="80" class="cc">. (no language data)</tspan>')
+        rows.append('<tspan x="340" y="60" class="cc">. (no language data)</tspan>')
     else:
-        y = 70
+        y = 50
         for b in buckets:
             blocks = bar_blocks_for(b['additions'], top)
             bar = '█' * blocks + ' ' * (20 - blocks)
