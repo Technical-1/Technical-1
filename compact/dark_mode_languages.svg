@@ -25,7 +25,7 @@ text, tspan {white-space: pre;}
 <rect x="145" y="162" width="16" height="13" fill="#7ee787" rx="2"/>
 <rect x="170" y="150" width="16" height="25" fill="#7ee787" rx="2"/>
 <rect x="195" y="106" width="16" height="69" fill="#7ee787" rx="2"/>
-<rect x="220" y="50" width="16" height="125" fill="#7ee787" rx="2"/>
+<rect x="220" y="51" width="16" height="124" fill="#7ee787" rx="2"/>
 <rect x="245" y="140" width="16" height="35" fill="#7ee787" rx="2"/>
 <rect x="270" y="172" width="16" height="3" fill="#7ee787" rx="2"/>
 <rect x="295" y="40" width="16" height="135" fill="#7ee787" rx="2"/>
@@ -43,7 +43,7 @@ text, tspan {white-space: pre;}
 <tspan x="278" y="195" text-anchor="middle">A</tspan>
 <tspan x="303" y="195" text-anchor="middle">M</tspan>
 </text>
-<text x="15" y="225" fill="#c9d1d9"><tspan x="15" y="225" class="cc">. </tspan><tspan class="key">Last 12mo: </tspan><tspan class="value">3,862</tspan><tspan class="cc"> contributions</tspan></text>
+<text x="15" y="225" fill="#c9d1d9"><tspan x="15" y="225" class="cc">. </tspan><tspan class="key">Last 12mo: </tspan><tspan class="value">3,863</tspan><tspan class="cc"> contributions</tspan></text>
 <text x="340" y="20" fill="#c9d1d9">
 <tspan x="340" y="30">- Languages by LOC</tspan> ———————————————————————————————
 <tspan x="340" y="50" class="cc">. </tspan><tspan class="key">Go            </tspan><tspan> </tspan><tspan fill="#00ADD8">████████████████████</tspan><tspan class="value"> 8.6M</tspan><tspan class="cc"> (61%)</tspan>
@@ -51,7 +51,7 @@ text, tspan {white-space: pre;}
 <tspan x="340" y="90" class="cc">. </tspan><tspan class="key">Python        </tspan><tspan> </tspan><tspan fill="#3572A5">████                </tspan><tspan class="value"> 1.8M</tspan><tspan class="cc"> (13%)</tspan>
 <tspan x="340" y="110" class="cc">. </tspan><tspan class="key">JavaScript    </tspan><tspan> </tspan><tspan fill="#f1e05a">█                   </tspan><tspan class="value"> 621K</tspan><tspan class="cc"> (4%)</tspan>
 <tspan x="340" y="130" class="cc">. </tspan><tspan class="key">Rust          </tspan><tspan> </tspan><tspan fill="#dea584">█                   </tspan><tspan class="value"> 172K</tspan><tspan class="cc"> (1%)</tspan>
-<tspan x="340" y="150" class="cc">. </tspan><tspan class="key">Swift         </tspan><tspan> </tspan><tspan fill="#F05138">█                   </tspan><tspan class="value"> 135K</tspan><tspan class="cc"> (1.0%)</tspan>
+<tspan x="340" y="150" class="cc">. </tspan><tspan class="key">Swift         </tspan><tspan> </tspan><tspan fill="#F05138">█                   </tspan><tspan class="value"> 135K</tspan><tspan class="cc"> (1%)</tspan>
 <tspan x="340" y="170" class="cc">. </tspan><tspan class="key">Liquid        </tspan><tspan> </tspan><tspan fill="#67b8de">█                   </tspan><tspan class="value"> 109K</tspan><tspan class="cc"> (0.8%)</tspan>
 <tspan x="340" y="190" class="cc">. </tspan><tspan class="key">Jupyter Notebo</tspan><tspan> </tspan><tspan fill="#DA5B0B">█                   </tspan><tspan class="value"> 43K</tspan><tspan class="cc"> (0.3%)</tspan>
 <tspan x="340" y="210" class="cc">. </tspan><tspan class="key">HTML          </tspan><tspan> </tspan><tspan fill="#e34c26">█                   </tspan><tspan class="value"> 40K</tspan><tspan class="cc"> (0.3%)</tspan>

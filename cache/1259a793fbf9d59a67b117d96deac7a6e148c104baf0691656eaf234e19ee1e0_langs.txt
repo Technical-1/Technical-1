@@ -1,6 +1,6 @@
 1 "Go" #00ADD8 8617618
 2 "TypeScript" #3178c6 2494572
-3 "Python" #3572A5 1821056
+3 "Python" #3572A5 1821062
 4 "JavaScript" #f1e05a 621396
 5 "Rust" #dea584 171558
 6 "Swift" #F05138 134655
