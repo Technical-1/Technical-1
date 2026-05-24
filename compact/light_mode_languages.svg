@@ -17,18 +17,18 @@ text, tspan {white-space: pre;}
 <text x="15" y="30" fill="#24292f">
 <tspan x="15" y="50">- Commits / month</tspan> —————————————
 </text>
-<rect x="20" y="195" width="16" height="1" fill="#1a7f37" rx="2"/>
-<rect x="45" y="195" width="16" height="1" fill="#1a7f37" rx="2"/>
-<rect x="70" y="194" width="16" height="1" fill="#1a7f37" rx="2"/>
-<rect x="95" y="195" width="16" height="1" fill="#1a7f37" rx="2"/>
-<rect x="120" y="195" width="16" height="1" fill="#1a7f37" rx="2"/>
-<rect x="145" y="165" width="16" height="30" fill="#1a7f37" rx="2"/>
-<rect x="170" y="174" width="16" height="21" fill="#1a7f37" rx="2"/>
-<rect x="195" y="109" width="16" height="86" fill="#1a7f37" rx="2"/>
-<rect x="220" y="80" width="16" height="115" fill="#1a7f37" rx="2"/>
-<rect x="245" y="140" width="16" height="55" fill="#1a7f37" rx="2"/>
-<rect x="270" y="195" width="16" height="1" fill="#1a7f37" rx="2"/>
-<rect x="295" y="107" width="16" height="88" fill="#1a7f37" rx="2"/>
+<rect x="20" y="195" width="16" height="1" fill="#40c463" rx="2"/>
+<rect x="45" y="195" width="16" height="1" fill="#40c463" rx="2"/>
+<rect x="70" y="194" width="16" height="1" fill="#40c463" rx="2"/>
+<rect x="95" y="195" width="16" height="1" fill="#40c463" rx="2"/>
+<rect x="120" y="195" width="16" height="1" fill="#40c463" rx="2"/>
+<rect x="145" y="165" width="16" height="30" fill="#40c463" rx="2"/>
+<rect x="170" y="174" width="16" height="21" fill="#40c463" rx="2"/>
+<rect x="195" y="109" width="16" height="86" fill="#40c463" rx="2"/>
+<rect x="220" y="80" width="16" height="115" fill="#40c463" rx="2"/>
+<rect x="245" y="140" width="16" height="55" fill="#40c463" rx="2"/>
+<rect x="270" y="195" width="16" height="1" fill="#40c463" rx="2"/>
+<rect x="295" y="106" width="16" height="89" fill="#40c463" rx="2"/>
 <text fill="#24292f" class="cc">
 <tspan x="28" y="215" text-anchor="middle">J</tspan>
 <tspan x="53" y="215" text-anchor="middle">J</tspan>
@@ -43,7 +43,7 @@ text, tspan {white-space: pre;}
 <tspan x="278" y="215" text-anchor="middle">A</tspan>
 <tspan x="303" y="215" text-anchor="middle">M</tspan>
 </text>
-<text x="15" y="240" fill="#24292f"><tspan x="15" y="240" class="cc">. </tspan><tspan class="key">Last 12mo: </tspan><tspan class="value">652</tspan><tspan class="cc"> commits</tspan></text>
+<text x="15" y="240" fill="#24292f"><tspan x="15" y="240" class="cc">. </tspan><tspan class="key">Last 12mo: </tspan><tspan class="value">653</tspan><tspan class="cc"> commits</tspan></text>
 <text x="340" y="30" fill="#24292f">
 <tspan x="340" y="50">- Languages by LOC</tspan> ———————————————————————————————
 <tspan x="340" y="70" class="cc">. </tspan><tspan class="key">Go            </tspan><tspan> </tspan><tspan fill="#00ADD8">████████████████████</tspan><tspan class="value"> 8.6M</tspan><tspan class="cc"> (61%)</tspan>
