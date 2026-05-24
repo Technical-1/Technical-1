@@ -82,20 +82,40 @@ def graph_commits(start_date, end_date):
     return int(request.json()['data']['user']['contributionsCollection']['contributionCalendar']['totalContributions'])
 
 
-def graph_repos_stars(count_type, owner_affiliation, cursor=None, add_loc=0, del_loc=0):
+def filter_owned_forks(edges):
     """
-    Uses GitHub's GraphQL v4 API to return my total repository, star, or lines of code count.
+    Drop forks whose upstream parent is also in the edges list — counting both
+    would double-count the same commits (e.g. an owned fork of a repo the user
+    is also a COLLABORATOR on). Forks whose parent is NOT in the list still
+    count, since their commits are the only place the user's work appears.
     """
+    all_names = {e['node']['nameWithOwner'] for e in edges}
+    return [
+        e for e in edges
+        if not (e['node'].get('isFork') and e['node'].get('parent') and e['node']['parent']['nameWithOwner'] in all_names)
+    ]
+
+
+def graph_repos_stars(count_type, owner_affiliation, cursor=None, edges_acc=None):
+    """
+    Uses GitHub's GraphQL v4 API to count repositories or sum stars, excluding
+    owned forks whose upstream parent is also in the user's list.
+    """
+    if edges_acc is None:
+        edges_acc = []
     query_count('graph_repos_stars')
     query = '''
     query ($owner_affiliation: [RepositoryAffiliation], $login: String!, $cursor: String) {
         user(login: $login) {
             repositories(first: 100, after: $cursor, ownerAffiliations: $owner_affiliation) {
-                totalCount
                 edges {
                     node {
                         ... on Repository {
                             nameWithOwner
+                            isFork
+                            parent {
+                                nameWithOwner
+                            }
                             stargazers {
                                 totalCount
                             }
@@ -111,11 +131,15 @@ def graph_repos_stars(count_type, owner_affiliation, cursor=None, add_loc=0, del
     }'''
     variables = {'owner_affiliation': owner_affiliation, 'login': USER_NAME, 'cursor': cursor}
     request = simple_request(graph_repos_stars.__name__, query, variables)
-    if request.status_code == 200:
-        if count_type == 'repos':
-            return request.json()['data']['user']['repositories']['totalCount']
-        elif count_type == 'stars':
-            return stars_counter(request.json()['data']['user']['repositories']['edges'])
+    page = request.json()['data']['user']['repositories']
+    edges_acc += page['edges']
+    if page['pageInfo']['hasNextPage']:
+        return graph_repos_stars(count_type, owner_affiliation, page['pageInfo']['endCursor'], edges_acc)
+    filtered = filter_owned_forks(edges_acc)
+    if count_type == 'repos':
+        return len(filtered)
+    elif count_type == 'stars':
+        return stars_counter(filtered)
 
 
 def recursive_loc(owner, repo_name, data, cache_comment, addition_total=0, deletion_total=0, my_commits=0, cursor=None, retry_count=0):
@@ -263,17 +287,7 @@ def loc_query(owner_affiliation, comment_size=0, force_cache=False, cursor=None,
         return loc_query(owner_affiliation, comment_size, force_cache, request.json()['data']['user']['repositories']['pageInfo']['endCursor'], edges)
     else:
         all_edges = edges + request.json()['data']['user']['repositories']['edges']
-        # Drop forks whose upstream parent is also in the user's repo list — counting
-        # both would double-count the same commits (e.g. an owned fork of a repo the
-        # user is a COLLABORATOR on). Forks whose parent is NOT in the list (e.g.
-        # forks of unrelated upstream projects) are kept, since their commits are
-        # the only place this user's work appears.
-        all_names = {e['node']['nameWithOwner'] for e in all_edges}
-        deduped = [
-            e for e in all_edges
-            if not (e['node'].get('isFork') and e['node'].get('parent') and e['node']['parent']['nameWithOwner'] in all_names)
-        ]
-        return cache_builder(deduped, comment_size, force_cache)
+        return cache_builder(filter_owned_forks(all_edges), comment_size, force_cache)
 
 
 def cache_builder(edges, comment_size, force_cache, loc_add=0, loc_del=0):
