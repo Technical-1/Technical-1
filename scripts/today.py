@@ -478,6 +478,84 @@ def read_language_cache(filename):
     return buckets
 
 
+def render_languages_svg(buckets, mode, output_path):
+    """
+    Render the languages-by-LOC bar chart SVG, matching the aesthetic of
+    compact/*_simple.svg. mode is 'dark' or 'light'. buckets is the list
+    of dicts from aggregate_languages() or read_language_cache(). If
+    buckets is empty, renders a fallback row.
+    """
+    if mode == 'dark':
+        bg = '#161b22'
+        text = '#c9d1d9'
+    else:
+        bg = '#f6f8fa'
+        text = '#24292f'
+
+    total = sum(b['additions'] for b in buckets) or 1
+    top = max((b['additions'] for b in buckets), default=0)
+
+    header = '<?xml version=\'1.0\' encoding=\'UTF-8\'?>\n'
+    svg_open = (
+        '<svg xmlns="http://www.w3.org/2000/svg" '
+        'font-family="ConsolasFallback,Consolas,monospace" '
+        'width="850px" height="255px" font-size="16px">\n'
+    )
+    style = (
+        '<style>\n'
+        '@font-face {\n'
+        "src: local('Consolas'), local('Consolas Bold');\n"
+        "font-family: 'ConsolasFallback';\n"
+        'font-display: swap;\n'
+        '-webkit-size-adjust: 109%;\n'
+        'size-adjust: 109%;\n'
+        '}\n'
+        '.key {fill: #ffa657;}\n'
+        '.value {fill: #a5d6ff;}\n'
+        '.cc {fill: #616e7f;}\n'
+        'text, tspan {white-space: pre;}\n'
+        '</style>\n'
+    )
+    rect = f'<rect width="850" height="255px" fill="{bg}" rx="15"/>\n'
+
+    # Right-panel header at the same y-offset as the existing GitHub Stats header
+    rows = [f'<text x="15" y="30" fill="{text}">']
+    rows.append('<tspan x="15" y="50">- Languages by LOC</tspan> ————————————————————————————————————————————')
+
+    if not buckets:
+        rows.append('<tspan x="15" y="80" class="cc">. (no language data)</tspan>')
+    else:
+        y = 80
+        for b in buckets:
+            blocks = bar_blocks_for(b['additions'], top)
+            bar = '█' * blocks + ' ' * (20 - blocks)
+            pct = round(100 * b['additions'] / total)
+            # Abbreviate count: 1234567 -> 1.2M, 12345 -> 12K, 999 -> 999
+            n = b['additions']
+            if n >= 1_000_000:
+                count_str = f'{n / 1_000_000:.1f}M'
+            elif n >= 1_000:
+                count_str = f'{n / 1_000:.0f}K'
+            else:
+                count_str = str(n)
+            # Pad name to 14 chars so bars line up
+            name_padded = b['name'][:14].ljust(14)
+            rows.append(
+                f'<tspan x="15" y="{y}" class="cc">. </tspan>'
+                f'<tspan class="key">{name_padded}</tspan>'
+                f'<tspan> </tspan>'
+                f'<tspan fill="{b["color"]}">{bar}</tspan>'
+                f'<tspan class="value"> {count_str}</tspan>'
+                f'<tspan class="cc"> ({pct}%)</tspan>'
+            )
+            y += 20
+
+    rows.append('</text>')
+    body = '\n'.join(rows) + '\n</svg>\n'
+    with open(output_path, 'w') as f:
+        f.write(header + svg_open + style + rect + body)
+
+
 def add_archive():
     """
     Several repositories I have contributed to have since been deleted.
