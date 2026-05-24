@@ -391,6 +391,49 @@ def bar_blocks_for(additions, top_additions):
     return max(1, math.floor(20 * additions / top_additions))
 
 
+def aggregate_languages(edges, data):
+    """
+    Bucket per-repo additions by Repository.primaryLanguage.name. Repos with
+    null primaryLanguage are silently skipped (they still count in the total
+    LOC widget). Returns a list of dicts ordered by additions descending,
+    truncated to top 6 with the remainder collapsed into a single 'Other'
+    bucket using .cc gray. Each dict: {'name', 'color', 'additions'}.
+    """
+    # Build hash -> additions map from cache file rows
+    add_by_hash = {}
+    for row in data:
+        parts = row.split()
+        if len(parts) >= 4:
+            try:
+                add_by_hash[parts[0]] = int(parts[3])
+            except ValueError:
+                continue
+    # Aggregate by language
+    totals = {}  # name -> [color, additions]
+    for edge in edges:
+        node = edge['node']
+        lang = node.get('primaryLanguage')
+        if not lang or not lang.get('name'):
+            continue
+        repo_hash = hashlib.sha256(node['nameWithOwner'].encode('utf-8')).hexdigest()
+        additions = add_by_hash.get(repo_hash, 0)
+        if additions == 0:
+            continue
+        name = lang['name']
+        color = lang.get('color') or '#616e7f'
+        if name not in totals:
+            totals[name] = [color, 0]
+        totals[name][1] += additions
+    # Sort by additions desc, top 6, collapse rest into Other
+    ranked = sorted(totals.items(), key=lambda kv: kv[1][1], reverse=True)
+    top = ranked[:6]
+    rest = ranked[6:]
+    buckets = [{'name': n, 'color': c, 'additions': a} for n, (c, a) in top]
+    if rest:
+        buckets.append({'name': 'Other', 'color': '#616e7f', 'additions': sum(a for _, (_, a) in rest)})
+    return buckets
+
+
 def add_archive():
     """
     Several repositories I have contributed to have since been deleted.
