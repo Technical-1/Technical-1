@@ -434,6 +434,45 @@ def aggregate_languages(edges, data):
     return buckets
 
 
+def write_language_cache(buckets, filename):
+    """
+    Write the language buckets to a sidecar cache file. Each row:
+    <rank> "<language_name>" <hex_color_with_hash> <additions>
+    Names are double-quoted so they can contain spaces (e.g. "Jupyter Notebook").
+    """
+    with open(filename, 'w') as f:
+        for rank, b in enumerate(buckets, start=1):
+            f.write(f'{rank} "{b["name"]}" {b["color"]} {b["additions"]}\n')
+
+
+def read_language_cache(filename):
+    """
+    Read the sidecar cache file back into a list of bucket dicts. Returns
+    [] if the file doesn't exist. Format mirrors write_language_cache().
+    """
+    try:
+        with open(filename) as f:
+            lines = f.readlines()
+    except FileNotFoundError:
+        return []
+    buckets = []
+    for line in lines:
+        line = line.rstrip('\n')
+        # Format: <rank> "<name>" <color> <additions>
+        # Parse by finding the quoted name span
+        try:
+            first_quote = line.index('"')
+            last_quote = line.rindex('"')
+            name = line[first_quote + 1:last_quote]
+            tail = line[last_quote + 1:].split()
+            color = tail[0]
+            additions = int(tail[1])
+            buckets.append({'name': name, 'color': color, 'additions': additions})
+        except (ValueError, IndexError):
+            continue
+    return buckets
+
+
 def add_archive():
     """
     Several repositories I have contributed to have since been deleted.
