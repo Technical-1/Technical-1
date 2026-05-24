@@ -170,26 +170,33 @@ def recursive_loc(owner, repo_name, data, cache_comment, addition_total=0, delet
             return recursive_loc(owner, repo_name, data, cache_comment, addition_total, deletion_total, my_commits, cursor, retry_count + 1)
         force_close_file(data, cache_comment)
         raise Exception(f'recursive_loc() network error after 5 retries: {e}')
-    if request.status_code == 200:
-        if request.json()['data']['repository']['defaultBranchRef'] != None: # Only count commits if repo isn't empty
-            return loc_counter_one_repo(owner, repo_name, data, cache_comment, request.json()['data']['repository']['defaultBranchRef']['target']['history'], addition_total, deletion_total, my_commits)
-        else: return 0
+    # Parse JSON defensively: GitHub sometimes returns HTTP 200 with a truncated/empty
+    # body when its backend is degraded (same root cause as 502/503/504 on this repo).
+    # Treat both modes as a single "degraded response" signal.
+    try:
+        response_body = request.json()
+    except requests.exceptions.JSONDecodeError:
+        response_body = None
+
+    if response_body is not None and request.status_code == 200:
+        branch_ref = response_body['data']['repository']['defaultBranchRef']
+        if branch_ref is not None:
+            return loc_counter_one_repo(owner, repo_name, data, cache_comment, branch_ref['target']['history'], addition_total, deletion_total, my_commits)
+        return 0
     force_close_file(data, cache_comment) # saves what is currently in the file before this program crashes
     if request.status_code == 403:
         raise Exception('Too many requests in a short amount of time!\nYou\'ve hit the non-documented anti-abuse limit!')
-    # Retry logic for 502/503/504 gateway errors (Bad Gateway, Service Unavailable, Gateway Timeout)
-    if request.status_code in [502, 503, 504] and retry_count < 5:
+    # Degraded backend: gateway error OR 200-with-malformed-body. Retry with backoff,
+    # then cache as SKIP so future runs don't re-query until commit_count changes.
+    degraded = response_body is None or request.status_code in [502, 503, 504]
+    if degraded and retry_count < 5:
         wait_time = (2 ** retry_count) * 3  # Exponential backoff: 3s, 6s, 12s, 24s, 48s
-        print(f'{request.status_code} error for {owner}/{repo_name}, retrying in {wait_time}s (attempt {retry_count + 1}/5)...')
+        reason = f'{request.status_code} error' if response_body is not None else 'empty/malformed JSON response'
+        print(f'{reason} for {owner}/{repo_name}, retrying in {wait_time}s (attempt {retry_count + 1}/5)...')
         time.sleep(wait_time)
         return recursive_loc(owner, repo_name, data, cache_comment, addition_total, deletion_total, my_commits, cursor, retry_count + 1)
-    # Persistent gateway error: GitHub's GraphQL backend can't compute this repo's
-    # commit history within its timeout. Return 'SKIP' so cache_builder writes the
-    # row with the LIVE totalCount and 0 LOC — next run will see commit_count ==
-    # totalCount and won't call recursive_loc again. Self-healing: a new push to the
-    # repo bumps totalCount, invalidating the cache and triggering a fresh attempt.
-    if request.status_code in [502, 503, 504]:
-        print(f'WARNING: {owner}/{repo_name} returned {request.status_code} after 5 retries — caching as skipped (will retry when commit count changes).')
+    if degraded:
+        print(f'WARNING: {owner}/{repo_name} degraded after 5 retries (last status {request.status_code}) — caching as skipped (will retry when commit count changes).')
         return 'SKIP'
     raise Exception('recursive_loc() has failed with a', request.status_code, request.text, QUERY_COUNT)
 
