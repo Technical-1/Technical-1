@@ -84,33 +84,39 @@ def graph_commits(start_date, end_date):
 
 def commits_by_month(months=12):
     """
-    Fetch per-calendar-month COMMIT counts (not total contributions) for the
-    last `months` months. Uses contributionsCollection.totalCommitContributions
-    which excludes PRs/issues/reviews. Issues one query per month so each
-    month's bucket is exactly that calendar month's commits.
+    Fetch per-calendar-month CONTRIBUTION counts for the last `months` months.
+    Uses contributionsCollection.contributionCalendar (one API call) which
+    counts all contribution types — commits, PRs, issues, reviews — matching
+    what GitHub displays on the user's profile contribution graph.
     Returns a list of (yyyy_mm, count) tuples ordered chronologically.
     """
+    query_count('commits_by_month')
+    end = datetime.datetime.now(datetime.timezone.utc)
+    start = end - relativedelta.relativedelta(months=months)
     query = '''
     query($login: String!, $from: DateTime!, $to: DateTime!) {
         user(login: $login) {
             contributionsCollection(from: $from, to: $to) {
-                totalCommitContributions
+                contributionCalendar {
+                    weeks {
+                        contributionDays {
+                            date
+                            contributionCount
+                        }
+                    }
+                }
             }
         }
     }'''
-    result = []
-    today = datetime.datetime.now(datetime.timezone.utc)
-    # Walk from (months-1) months ago forward to current month
-    for i in range(months - 1, -1, -1):
-        anchor = today - relativedelta.relativedelta(months=i)
-        start = anchor.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-        end = start + relativedelta.relativedelta(months=1)
-        query_count('commits_by_month')
-        variables = {'login': USER_NAME, 'from': start.isoformat(), 'to': end.isoformat()}
-        request = simple_request(commits_by_month.__name__, query, variables)
-        count = int(request.json()['data']['user']['contributionsCollection']['totalCommitContributions'])
-        result.append((start.strftime('%Y-%m'), count))
-    return result
+    variables = {'login': USER_NAME, 'from': start.isoformat(), 'to': end.isoformat()}
+    request = simple_request(commits_by_month.__name__, query, variables)
+    weeks = request.json()['data']['user']['contributionsCollection']['contributionCalendar']['weeks']
+    by_month = {}
+    for week in weeks:
+        for day in week['contributionDays']:
+            ym = day['date'][:7]  # 'YYYY-MM'
+            by_month[ym] = by_month.get(ym, 0) + day['contributionCount']
+    return sorted(by_month.items())[-months:]
 
 
 def filter_owned_forks(edges):
@@ -564,7 +570,7 @@ def render_languages_svg(commits, buckets, mode, output_path):
     # bars in a lighter GitHub-contribution-graph green; month-initial labels below.
     commits_color = '#7ee787' if mode == 'dark' else '#40c463'
     left_parts = [f'<text x="15" y="30" fill="{text}">']
-    left_parts.append('<tspan x="15" y="50">- Commits / month</tspan> —————————————')
+    left_parts.append('<tspan x="15" y="50">- Contributions / month</tspan> ———————')
     left_parts.append('</text>')
     if commits:
         max_commits = max(c for _, c in commits) or 1
@@ -590,13 +596,13 @@ def render_languages_svg(commits, buckets, mode, output_path):
             f'<tspan x="15" y="240" class="cc">. </tspan>'
             f'<tspan class="key">Last 12mo: </tspan>'
             f'<tspan class="value">{total_commits:,}</tspan>'
-            f'<tspan class="cc"> commits</tspan>'
+            f'<tspan class="cc"> contributions</tspan>'
             f'</text>'
         )
     else:
         left_parts.append(
             f'<text x="15" y="80" fill="{text}">'
-            f'<tspan x="15" y="80" class="cc">. (no commit data)</tspan>'
+            f'<tspan x="15" y="80" class="cc">. (no contribution data)</tspan>'
             f'</text>'
         )
     LEFT_PANEL = '\n'.join(left_parts) + '\n'
