@@ -347,6 +347,11 @@ def cache_builder(edges, comment_size, force_cache, loc_add=0, loc_del=0):
     with open(filename, 'w') as f:
         f.writelines(cache_comment)
         f.writelines(data)
+    # Aggregate per-language additions and write the languages sidecar so
+    # render_languages_svg can be called from __main__ without re-reading edges.
+    language_buckets = aggregate_languages(edges, data)
+    langs_filename = filename[:-4] + '_langs.txt'  # cache/<hash>.txt -> cache/<hash>_langs.txt
+    write_language_cache(language_buckets, langs_filename)
     for line in data:
         loc = line.split()
         loc_add += int(loc[3])
