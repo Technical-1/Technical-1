@@ -233,6 +233,10 @@ def loc_query(owner_affiliation, comment_size=0, force_cache=False, cursor=None,
                 node {
                     ... on Repository {
                         nameWithOwner
+                        isFork
+                        parent {
+                            nameWithOwner
+                        }
                         defaultBranchRef {
                             target {
                                 ... on Commit {
@@ -258,7 +262,18 @@ def loc_query(owner_affiliation, comment_size=0, force_cache=False, cursor=None,
         edges += request.json()['data']['user']['repositories']['edges']            # Add on to the LoC count
         return loc_query(owner_affiliation, comment_size, force_cache, request.json()['data']['user']['repositories']['pageInfo']['endCursor'], edges)
     else:
-        return cache_builder(edges + request.json()['data']['user']['repositories']['edges'], comment_size, force_cache)
+        all_edges = edges + request.json()['data']['user']['repositories']['edges']
+        # Drop forks whose upstream parent is also in the user's repo list — counting
+        # both would double-count the same commits (e.g. an owned fork of a repo the
+        # user is a COLLABORATOR on). Forks whose parent is NOT in the list (e.g.
+        # forks of unrelated upstream projects) are kept, since their commits are
+        # the only place this user's work appears.
+        all_names = {e['node']['nameWithOwner'] for e in all_edges}
+        deduped = [
+            e for e in all_edges
+            if not (e['node'].get('isFork') and e['node'].get('parent') and e['node']['parent']['nameWithOwner'] in all_names)
+        ]
+        return cache_builder(deduped, comment_size, force_cache)
 
 
 def cache_builder(edges, comment_size, force_cache, loc_add=0, loc_del=0):
@@ -323,17 +338,24 @@ def cache_builder(edges, comment_size, force_cache, loc_add=0, loc_del=0):
 
 def flush_cache(edges, filename, comment_size):
     """
-    Wipes the cache file
-    This is called when the number of repositories changes or when the file is first created
+    Rebuild the cache to match the current edges list. Preserves prior LOC values
+    for repos that survive (matched by hash) so a changed repo set (added/removed
+    repo, or a fork filter that shrinks the list) doesn't wipe LOC data we already
+    paid to compute.
     """
     with open(filename, 'r') as f:
-        data = []
-        if comment_size > 0:
-            data = f.readlines()[:comment_size] # only save the comment
+        existing = f.readlines()
+    comment = existing[:comment_size] if comment_size > 0 else []
+    prior_by_hash = {}
+    for line in existing[comment_size:]:
+        parts = line.split()
+        if parts:
+            prior_by_hash[parts[0]] = line
     with open(filename, 'w') as f:
-        f.writelines(data)
+        f.writelines(comment)
         for node in edges:
-            f.write(hashlib.sha256(node['node']['nameWithOwner'].encode('utf-8')).hexdigest() + ' 0 0 0 0\n')
+            repo_hash = hashlib.sha256(node['node']['nameWithOwner'].encode('utf-8')).hexdigest()
+            f.write(prior_by_hash.get(repo_hash, repo_hash + ' 0 0 0 0\n'))
 
 
 def add_archive():
