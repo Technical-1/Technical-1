@@ -376,6 +376,21 @@ def flush_cache(edges, filename, comment_size):
             f.write(prior_by_hash.get(repo_hash, repo_hash + ' 0 0 0 0\n'))
 
 
+def bar_blocks_for(additions, top_additions):
+    """
+    Compute Unicode-block bar length for a language given its additions
+    and the additions of the top language. Top language gets exactly 20
+    blocks; others scale proportionally with a floor of 1 for any
+    non-zero value. Returns 0 only when additions is 0 (or top is 0).
+    """
+    if additions == 0 or top_additions == 0:
+        return 0
+    if additions >= top_additions:
+        return 20
+    import math
+    return max(1, math.floor(20 * additions / top_additions))
+
+
 def add_archive():
     """
     Several repositories I have contributed to have since been deleted.
