@@ -561,8 +561,8 @@ def render_languages_svg(commits, buckets, mode, output_path):
         cc_color = '#c2cfde'
 
     # LEFT PANEL: commits-per-month sparkline (x=15 to x~315). Uses SVG <rect>
-    # bars in GitHub-contribution-graph green; month-initial labels below.
-    commits_color = '#3fb950' if mode == 'dark' else '#1a7f37'
+    # bars in a lighter GitHub-contribution-graph green; month-initial labels below.
+    commits_color = '#7ee787' if mode == 'dark' else '#40c463'
     left_parts = [f'<text x="15" y="30" fill="{text}">']
     left_parts.append('<tspan x="15" y="50">- Commits / month</tspan> —————————————')
     left_parts.append('</text>')

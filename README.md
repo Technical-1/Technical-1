@@ -7,8 +7,8 @@
 
 <a href="https://github.com/Technical-1/Technical-1">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Technical-1/Technical-1/main/compact/dark_mode_languages.svg?v=2">
-    <img alt="Jacob Kanfer's Commits + Top Languages" src="https://raw.githubusercontent.com/Technical-1/Technical-1/main/compact/light_mode_languages.svg?v=2">
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Technical-1/Technical-1/main/compact/dark_mode_languages.svg?v=3">
+    <img alt="Jacob Kanfer's Commits + Top Languages" src="https://raw.githubusercontent.com/Technical-1/Technical-1/main/compact/light_mode_languages.svg?v=3">
   </picture>
 </a>
 
