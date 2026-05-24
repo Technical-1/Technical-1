@@ -257,6 +257,10 @@ def loc_query(owner_affiliation, comment_size=0, force_cache=False, cursor=None,
                 node {
                     ... on Repository {
                         nameWithOwner
+                        primaryLanguage {
+                            name
+                            color
+                        }
                         isFork
                         parent {
                             nameWithOwner
