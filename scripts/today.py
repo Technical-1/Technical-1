@@ -857,6 +857,12 @@ if __name__ == '__main__':
     svg_overwrite('compact/dark_mode_simple.svg', commit_data, star_data, repo_data, contrib_data, follower_data, total_loc[:-1])
     svg_overwrite('compact/light_mode_simple.svg', commit_data, star_data, repo_data, contrib_data, follower_data, total_loc[:-1])
 
+    # Languages-by-LOC chart, paired with the compact stats SVGs above
+    langs_filename = 'cache/' + hashlib.sha256(USER_NAME.encode('utf-8')).hexdigest() + '_langs.txt'
+    language_buckets = read_language_cache(langs_filename)
+    render_languages_svg(language_buckets, 'dark', 'compact/dark_mode_languages.svg')
+    render_languages_svg(language_buckets, 'light', 'compact/light_mode_languages.svg')
+
     # Update and render OG preview image
     html_overwrite('og-preview.html', repo_data, commit_data, star_data, total_loc[:-1])
     render_og_image('og-preview.html', '.portfolio/preview.png')
