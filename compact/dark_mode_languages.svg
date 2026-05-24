@@ -15,20 +15,20 @@ text, tspan {white-space: pre;}
 </style>
 <rect width="850" height="255px" fill="#161b22" rx="15"/>
 <text x="15" y="30" fill="#c9d1d9">
-<tspan x="15" y="50">- Commits / month</tspan> —————————————————————
+<tspan x="15" y="50">- Commits / month</tspan> —————————————
 </text>
-<rect x="20" y="171" width="16" height="24" fill="#3fb950" rx="2"/>
-<rect x="45" y="186" width="16" height="9" fill="#3fb950" rx="2"/>
-<rect x="70" y="195" width="16" height="1" fill="#3fb950" rx="2"/>
+<rect x="20" y="195" width="16" height="1" fill="#3fb950" rx="2"/>
+<rect x="45" y="195" width="16" height="1" fill="#3fb950" rx="2"/>
+<rect x="70" y="194" width="16" height="1" fill="#3fb950" rx="2"/>
 <rect x="95" y="195" width="16" height="1" fill="#3fb950" rx="2"/>
-<rect x="120" y="194" width="16" height="1" fill="#3fb950" rx="2"/>
-<rect x="145" y="184" width="16" height="11" fill="#3fb950" rx="2"/>
-<rect x="170" y="173" width="16" height="22" fill="#3fb950" rx="2"/>
-<rect x="195" y="135" width="16" height="60" fill="#3fb950" rx="2"/>
-<rect x="220" y="87" width="16" height="108" fill="#3fb950" rx="2"/>
-<rect x="245" y="164" width="16" height="31" fill="#3fb950" rx="2"/>
-<rect x="270" y="192" width="16" height="3" fill="#3fb950" rx="2"/>
-<rect x="295" y="80" width="16" height="115" fill="#3fb950" rx="2"/>
+<rect x="120" y="195" width="16" height="1" fill="#3fb950" rx="2"/>
+<rect x="145" y="165" width="16" height="30" fill="#3fb950" rx="2"/>
+<rect x="170" y="174" width="16" height="21" fill="#3fb950" rx="2"/>
+<rect x="195" y="109" width="16" height="86" fill="#3fb950" rx="2"/>
+<rect x="220" y="80" width="16" height="115" fill="#3fb950" rx="2"/>
+<rect x="245" y="140" width="16" height="55" fill="#3fb950" rx="2"/>
+<rect x="270" y="195" width="16" height="1" fill="#3fb950" rx="2"/>
+<rect x="295" y="107" width="16" height="88" fill="#3fb950" rx="2"/>
 <text fill="#c9d1d9" class="cc">
 <tspan x="28" y="215" text-anchor="middle">J</tspan>
 <tspan x="53" y="215" text-anchor="middle">J</tspan>
@@ -43,13 +43,13 @@ text, tspan {white-space: pre;}
 <tspan x="278" y="215" text-anchor="middle">A</tspan>
 <tspan x="303" y="215" text-anchor="middle">M</tspan>
 </text>
-<text x="15" y="240" fill="#c9d1d9"><tspan x="15" y="240" class="cc">. </tspan><tspan class="key">Last 12mo: </tspan><tspan class="value">3,843</tspan><tspan class="cc"> commits</tspan></text>
+<text x="15" y="240" fill="#c9d1d9"><tspan x="15" y="240" class="cc">. </tspan><tspan class="key">Last 12mo: </tspan><tspan class="value">652</tspan><tspan class="cc"> commits</tspan></text>
 <text x="340" y="30" fill="#c9d1d9">
 <tspan x="340" y="50">- Languages by LOC</tspan> ———————————————————————————————
 <tspan x="340" y="70" class="cc">. </tspan><tspan class="key">Go            </tspan><tspan> </tspan><tspan fill="#00ADD8">████████████████████</tspan><tspan class="value"> 8.6M</tspan><tspan class="cc"> (61%)</tspan>
-<tspan x="340" y="90" class="cc">. </tspan><tspan class="key">TypeScript    </tspan><tspan> </tspan><tspan fill="#3178c6">█████               </tspan><tspan class="value"> 2.6M</tspan><tspan class="cc"> (18%)</tspan>
+<tspan x="340" y="90" class="cc">. </tspan><tspan class="key">TypeScript    </tspan><tspan> </tspan><tspan fill="#3178c6">█████               </tspan><tspan class="value"> 2.5M</tspan><tspan class="cc"> (18%)</tspan>
 <tspan x="340" y="110" class="cc">. </tspan><tspan class="key">Python        </tspan><tspan> </tspan><tspan fill="#3572A5">████                </tspan><tspan class="value"> 1.8M</tspan><tspan class="cc"> (13%)</tspan>
-<tspan x="340" y="130" class="cc">. </tspan><tspan class="key">JavaScript    </tspan><tspan> </tspan><tspan fill="#f1e05a">█                   </tspan><tspan class="value"> 541K</tspan><tspan class="cc"> (4%)</tspan>
+<tspan x="340" y="130" class="cc">. </tspan><tspan class="key">JavaScript    </tspan><tspan> </tspan><tspan fill="#f1e05a">█                   </tspan><tspan class="value"> 621K</tspan><tspan class="cc"> (4%)</tspan>
 <tspan x="340" y="150" class="cc">. </tspan><tspan class="key">Rust          </tspan><tspan> </tspan><tspan fill="#dea584">█                   </tspan><tspan class="value"> 172K</tspan><tspan class="cc"> (1%)</tspan>
 <tspan x="340" y="170" class="cc">. </tspan><tspan class="key">Swift         </tspan><tspan> </tspan><tspan fill="#F05138">█                   </tspan><tspan class="value"> 135K</tspan><tspan class="cc"> (1%)</tspan>
 <tspan x="340" y="190" class="cc">. </tspan><tspan class="key">Other         </tspan><tspan> </tspan><tspan fill="#616e7f">█                   </tspan><tspan class="value"> 242K</tspan><tspan class="cc"> (2%)</tspan>
