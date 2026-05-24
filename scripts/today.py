@@ -183,14 +183,14 @@ def recursive_loc(owner, repo_name, data, cache_comment, addition_total=0, delet
         print(f'{request.status_code} error for {owner}/{repo_name}, retrying in {wait_time}s (attempt {retry_count + 1}/5)...')
         time.sleep(wait_time)
         return recursive_loc(owner, repo_name, data, cache_comment, addition_total, deletion_total, my_commits, cursor, retry_count + 1)
-    # Persistent gateway error on this repo: GitHub's GraphQL backend can't compute the
-    # commit history within its timeout. Skip the repo for this run rather than failing
-    # the whole job. Returning 0 falls through to cache_builder's `except TypeError`,
-    # which records the repo as `0 0 0 0` so the next run will try again (self-healing
-    # if/when GitHub recovers).
+    # Persistent gateway error: GitHub's GraphQL backend can't compute this repo's
+    # commit history within its timeout. Return 'SKIP' so cache_builder writes the
+    # row with the LIVE totalCount and 0 LOC — next run will see commit_count ==
+    # totalCount and won't call recursive_loc again. Self-healing: a new push to the
+    # repo bumps totalCount, invalidating the cache and triggering a fresh attempt.
     if request.status_code in [502, 503, 504]:
-        print(f'WARNING: {owner}/{repo_name} returned {request.status_code} after 5 retries — skipping this repo for this run.')
-        return 0
+        print(f'WARNING: {owner}/{repo_name} returned {request.status_code} after 5 retries — caching as skipped (will retry when commit count changes).')
+        return 'SKIP'
     raise Exception('recursive_loc() has failed with a', request.status_code, request.text, QUERY_COUNT)
 
 
@@ -283,11 +283,17 @@ def cache_builder(edges, comment_size, force_cache, loc_add=0, loc_del=0):
         repo_hash, commit_count, *__ = data[index].split()
         if repo_hash == hashlib.sha256(edges[index]['node']['nameWithOwner'].encode('utf-8')).hexdigest():
             try:
-                if int(commit_count) != edges[index]['node']['defaultBranchRef']['target']['history']['totalCount']:
+                live_total = edges[index]['node']['defaultBranchRef']['target']['history']['totalCount']
+                if int(commit_count) != live_total:
                     # if commit count has changed, update loc for that repo
                     owner, repo_name = edges[index]['node']['nameWithOwner'].split('/')
                     loc = recursive_loc(owner, repo_name, data, cache_comment)
-                    data[index] = repo_hash + ' ' + str(edges[index]['node']['defaultBranchRef']['target']['history']['totalCount']) + ' ' + str(loc[2]) + ' ' + str(loc[0]) + ' ' + str(loc[1]) + '\n'
+                    if loc == 'SKIP':
+                        # Cache the live totalCount + 0 LOC so we don't re-query
+                        # this broken repo until it gets new commits.
+                        data[index] = repo_hash + ' ' + str(live_total) + ' 0 0 0\n'
+                    else:
+                        data[index] = repo_hash + ' ' + str(live_total) + ' ' + str(loc[2]) + ' ' + str(loc[0]) + ' ' + str(loc[1]) + '\n'
             except TypeError: # If the repo is empty
                 data[index] = repo_hash + ' 0 0 0 0\n'
     with open(filename, 'w') as f:
