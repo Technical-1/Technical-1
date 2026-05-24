@@ -663,6 +663,10 @@ def render_languages_svg(commits, buckets, mode, output_path):
                 count_str = f'{n / 1_000:.0f}K'
             else:
                 count_str = str(n)
+            # Right-align count + pct so the columns line up across rows (monospace).
+            # count_str max in practice = '12.3M' (5 chars); pct = '0.4' or '61' (1-3 chars).
+            count_padded = count_str.rjust(5)
+            pct_padded = pct.rjust(4) + '%'
             # Pad name to 14 chars so bars line up
             name_padded = b['name'][:14].ljust(14)
             # Use mode-appropriate cc_color for Other bucket, b['color'] for real languages
@@ -672,8 +676,8 @@ def render_languages_svg(commits, buckets, mode, output_path):
                 f'<tspan class="key">{name_padded}</tspan>'
                 f'<tspan> </tspan>'
                 f'<tspan fill="{bar_color}">{bar}</tspan>'
-                f'<tspan class="value"> {count_str}</tspan>'
-                f'<tspan class="cc"> ({pct}%)</tspan>'
+                f'<tspan class="value"> {count_padded}</tspan>'
+                f'<tspan class="cc"> ({pct_padded})</tspan>'
             )
             y += 20
 
