@@ -14,44 +14,47 @@ size-adjust: 109%;
 text, tspan {white-space: pre;}
 </style>
 <rect width="850" height="255px" fill="#f6f8fa" rx="15"/>
-<text x="15" y="30" fill="#24292f">
-<tspan x="15" y="50">- Contributions / month</tspan> ———————
+<text x="15" y="20" fill="#24292f">
+<tspan x="15" y="30">- Contributions / month</tspan> ———————
 </text>
-<rect x="20" y="171" width="16" height="24" fill="#40c463" rx="2"/>
-<rect x="45" y="187" width="16" height="8" fill="#40c463" rx="2"/>
-<rect x="70" y="195" width="16" height="1" fill="#40c463" rx="2"/>
-<rect x="95" y="195" width="16" height="1" fill="#40c463" rx="2"/>
-<rect x="120" y="194" width="16" height="1" fill="#40c463" rx="2"/>
-<rect x="145" y="184" width="16" height="11" fill="#40c463" rx="2"/>
-<rect x="170" y="174" width="16" height="21" fill="#40c463" rx="2"/>
-<rect x="195" y="136" width="16" height="59" fill="#40c463" rx="2"/>
-<rect x="220" y="89" width="16" height="106" fill="#40c463" rx="2"/>
-<rect x="245" y="165" width="16" height="30" fill="#40c463" rx="2"/>
-<rect x="270" y="192" width="16" height="3" fill="#40c463" rx="2"/>
-<rect x="295" y="80" width="16" height="115" fill="#40c463" rx="2"/>
+<rect x="20" y="147" width="16" height="28" fill="#40c463" rx="2"/>
+<rect x="45" y="165" width="16" height="10" fill="#40c463" rx="2"/>
+<rect x="70" y="175" width="16" height="1" fill="#40c463" rx="2"/>
+<rect x="95" y="175" width="16" height="1" fill="#40c463" rx="2"/>
+<rect x="120" y="174" width="16" height="1" fill="#40c463" rx="2"/>
+<rect x="145" y="162" width="16" height="13" fill="#40c463" rx="2"/>
+<rect x="170" y="150" width="16" height="25" fill="#40c463" rx="2"/>
+<rect x="195" y="106" width="16" height="69" fill="#40c463" rx="2"/>
+<rect x="220" y="50" width="16" height="125" fill="#40c463" rx="2"/>
+<rect x="245" y="140" width="16" height="35" fill="#40c463" rx="2"/>
+<rect x="270" y="172" width="16" height="3" fill="#40c463" rx="2"/>
+<rect x="295" y="40" width="16" height="135" fill="#40c463" rx="2"/>
 <text fill="#24292f" class="cc">
-<tspan x="28" y="215" text-anchor="middle">J</tspan>
-<tspan x="53" y="215" text-anchor="middle">J</tspan>
-<tspan x="78" y="215" text-anchor="middle">A</tspan>
-<tspan x="103" y="215" text-anchor="middle">S</tspan>
-<tspan x="128" y="215" text-anchor="middle">O</tspan>
-<tspan x="153" y="215" text-anchor="middle">N</tspan>
-<tspan x="178" y="215" text-anchor="middle">D</tspan>
-<tspan x="203" y="215" text-anchor="middle">J</tspan>
-<tspan x="228" y="215" text-anchor="middle">F</tspan>
-<tspan x="253" y="215" text-anchor="middle">M</tspan>
-<tspan x="278" y="215" text-anchor="middle">A</tspan>
-<tspan x="303" y="215" text-anchor="middle">M</tspan>
+<tspan x="28" y="195" text-anchor="middle">J</tspan>
+<tspan x="53" y="195" text-anchor="middle">J</tspan>
+<tspan x="78" y="195" text-anchor="middle">A</tspan>
+<tspan x="103" y="195" text-anchor="middle">S</tspan>
+<tspan x="128" y="195" text-anchor="middle">O</tspan>
+<tspan x="153" y="195" text-anchor="middle">N</tspan>
+<tspan x="178" y="195" text-anchor="middle">D</tspan>
+<tspan x="203" y="195" text-anchor="middle">J</tspan>
+<tspan x="228" y="195" text-anchor="middle">F</tspan>
+<tspan x="253" y="195" text-anchor="middle">M</tspan>
+<tspan x="278" y="195" text-anchor="middle">A</tspan>
+<tspan x="303" y="195" text-anchor="middle">M</tspan>
 </text>
-<text x="15" y="240" fill="#24292f"><tspan x="15" y="240" class="cc">. </tspan><tspan class="key">Last 12mo: </tspan><tspan class="value">3,860</tspan><tspan class="cc"> contributions</tspan></text>
-<text x="340" y="30" fill="#24292f">
-<tspan x="340" y="50">- Languages by LOC</tspan> ———————————————————————————————
-<tspan x="340" y="70" class="cc">. </tspan><tspan class="key">Go            </tspan><tspan> </tspan><tspan fill="#00ADD8">████████████████████</tspan><tspan class="value"> 8.6M</tspan><tspan class="cc"> (61%)</tspan>
-<tspan x="340" y="90" class="cc">. </tspan><tspan class="key">TypeScript    </tspan><tspan> </tspan><tspan fill="#3178c6">█████               </tspan><tspan class="value"> 2.5M</tspan><tspan class="cc"> (18%)</tspan>
-<tspan x="340" y="110" class="cc">. </tspan><tspan class="key">Python        </tspan><tspan> </tspan><tspan fill="#3572A5">████                </tspan><tspan class="value"> 1.8M</tspan><tspan class="cc"> (13%)</tspan>
-<tspan x="340" y="130" class="cc">. </tspan><tspan class="key">JavaScript    </tspan><tspan> </tspan><tspan fill="#f1e05a">█                   </tspan><tspan class="value"> 621K</tspan><tspan class="cc"> (4%)</tspan>
-<tspan x="340" y="150" class="cc">. </tspan><tspan class="key">Rust          </tspan><tspan> </tspan><tspan fill="#dea584">█                   </tspan><tspan class="value"> 172K</tspan><tspan class="cc"> (1%)</tspan>
-<tspan x="340" y="170" class="cc">. </tspan><tspan class="key">Swift         </tspan><tspan> </tspan><tspan fill="#F05138">█                   </tspan><tspan class="value"> 135K</tspan><tspan class="cc"> (1%)</tspan>
-<tspan x="340" y="190" class="cc">. </tspan><tspan class="key">Other         </tspan><tspan> </tspan><tspan fill="#c2cfde">█                   </tspan><tspan class="value"> 242K</tspan><tspan class="cc"> (2%)</tspan>
+<text x="15" y="225" fill="#24292f"><tspan x="15" y="225" class="cc">. </tspan><tspan class="key">Last 12mo: </tspan><tspan class="value">3,861</tspan><tspan class="cc"> contributions</tspan></text>
+<text x="340" y="20" fill="#24292f">
+<tspan x="340" y="30">- Languages by LOC</tspan> ———————————————————————————————
+<tspan x="340" y="50" class="cc">. </tspan><tspan class="key">Go            </tspan><tspan> </tspan><tspan fill="#00ADD8">████████████████████</tspan><tspan class="value"> 8.6M</tspan><tspan class="cc"> (61%)</tspan>
+<tspan x="340" y="70" class="cc">. </tspan><tspan class="key">TypeScript    </tspan><tspan> </tspan><tspan fill="#3178c6">█████               </tspan><tspan class="value"> 2.5M</tspan><tspan class="cc"> (18%)</tspan>
+<tspan x="340" y="90" class="cc">. </tspan><tspan class="key">Python        </tspan><tspan> </tspan><tspan fill="#3572A5">████                </tspan><tspan class="value"> 1.8M</tspan><tspan class="cc"> (13%)</tspan>
+<tspan x="340" y="110" class="cc">. </tspan><tspan class="key">JavaScript    </tspan><tspan> </tspan><tspan fill="#f1e05a">█                   </tspan><tspan class="value"> 621K</tspan><tspan class="cc"> (4%)</tspan>
+<tspan x="340" y="130" class="cc">. </tspan><tspan class="key">Rust          </tspan><tspan> </tspan><tspan fill="#dea584">█                   </tspan><tspan class="value"> 172K</tspan><tspan class="cc"> (1%)</tspan>
+<tspan x="340" y="150" class="cc">. </tspan><tspan class="key">Swift         </tspan><tspan> </tspan><tspan fill="#F05138">█                   </tspan><tspan class="value"> 135K</tspan><tspan class="cc"> (1%)</tspan>
+<tspan x="340" y="170" class="cc">. </tspan><tspan class="key">Liquid        </tspan><tspan> </tspan><tspan fill="#67b8de">█                   </tspan><tspan class="value"> 109K</tspan><tspan class="cc"> (1%)</tspan>
+<tspan x="340" y="190" class="cc">. </tspan><tspan class="key">Jupyter Notebo</tspan><tspan> </tspan><tspan fill="#DA5B0B">█                   </tspan><tspan class="value"> 43K</tspan><tspan class="cc"> (0%)</tspan>
+<tspan x="340" y="210" class="cc">. </tspan><tspan class="key">HTML          </tspan><tspan> </tspan><tspan fill="#e34c26">█                   </tspan><tspan class="value"> 40K</tspan><tspan class="cc"> (0%)</tspan>
+<tspan x="340" y="230" class="cc">. </tspan><tspan class="key">Other         </tspan><tspan> </tspan><tspan fill="#c2cfde">█                   </tspan><tspan class="value"> 50K</tspan><tspan class="cc"> (0%)</tspan>
 </text>
 </svg>
