@@ -650,7 +650,9 @@ def render_languages_svg(commits, buckets, mode, output_path):
         for b in buckets:
             blocks = bar_blocks_for(b['additions'], top)
             bar = '█' * blocks + ' ' * (20 - blocks)
-            pct = round(100 * b['additions'] / total)
+            pct_raw = 100 * b['additions'] / total
+            # Use one decimal for sub-1% languages so 0.3% doesn't round to 0%
+            pct = f'{pct_raw:.1f}' if pct_raw < 1 else str(round(pct_raw))
             # Abbreviate count: 1234567 -> 1.2M, 12345 -> 12K, 999 -> 999
             n = b['additions']
             if n >= 1_000_000:
