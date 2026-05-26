@@ -14,6 +14,24 @@ HEADERS = {'authorization': 'token '+ os.environ['ACCESS_TOKEN']}
 USER_NAME = os.environ['USER_NAME'] # 'Andrew6rant'
 QUERY_COUNT = {'user_getter': 0, 'follower_getter': 0, 'graph_repos_stars': 0, 'recursive_loc': 0, 'graph_commits': 0, 'loc_query': 0, 'commits_by_month': 0}
 
+# Repos with frozen content where commit-additions counting is unreliable
+# (subtree-merged archives that pull in upstream forks; original sub-repo
+# history with binary-blob commits that inflate additions to millions).
+# Values are derived from `cloc` on team-written subdirectories only,
+# excluding upstream forks. Since the archive content is frozen, these
+# numbers don't go stale. Counted as code lines (no blanks, no comments).
+LOC_HARDCODE = {
+    # AHSR senior design archive (CD1-ARHS team work).
+    # Total of 21 subtree-merged sub-repos minus 6 public upstream forks
+    # (ros2_control*, OrbbecSDK_ROS2, ros2_explorer, rplidar_ros2).
+    # Derived: 767,112 grand total cloc lines - 133,822 upstream = 633,290.
+    'AHSR-senior-design-archive': {
+        'additions': 633290,
+        'deletions': 0,
+        'my_commits': 22,  # 1 init commit + 21 subtree-add merge commits
+    },
+}
+
 
 def daily_readme(birthday):
     """
@@ -370,7 +388,15 @@ def cache_builder(edges, comment_size, force_cache, loc_add=0, loc_del=0):
                 if int(commit_count) != live_total:
                     # if commit count has changed, update loc for that repo
                     owner, repo_name = edges[index]['node']['nameWithOwner'].split('/')
-                    loc = recursive_loc(owner, repo_name, data, cache_comment)
+                    if repo_name in LOC_HARDCODE:
+                        # Repo content is frozen and commit-additions counting
+                        # is unreliable (subtree-merge double-counting + binary
+                        # blob commits). Use the hardcoded cloc-derived value
+                        # and skip the GraphQL queries entirely.
+                        override = LOC_HARDCODE[repo_name]
+                        loc = (override['additions'], override['deletions'], override['my_commits'])
+                    else:
+                        loc = recursive_loc(owner, repo_name, data, cache_comment)
                     if loc == 'SKIP':
                         # Keep yesterday's LOC values; only update commit_count to
                         # live_total. Zeroing here would corrupt the displayed total
