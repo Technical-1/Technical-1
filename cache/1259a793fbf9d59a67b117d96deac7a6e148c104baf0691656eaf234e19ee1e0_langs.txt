@@ -1,10 +1,10 @@
 1 "Go" #00ADD8 8617618
-2 "TypeScript" #3178c6 2534368
-3 "Python" #3572A5 1821371
-4 "JavaScript" #f1e05a 626004
-5 "Rust" #dea584 180033
-6 "Swift" #F05138 138674
-7 "Liquid" #67b8de 108680
-8 "Jupyter Notebook" #DA5B0B 42840
-9 "HTML" #e34c26 40152
-10 "Other" #616e7f 50313
+2 "TypeScript" #3178c6 3254173
+3 "Python" #3572A5 1821398
+4 "C++" #f34b7d 633290
+5 "JavaScript" #f1e05a 626004
+6 "Rust" #dea584 180033
+7 "Swift" #F05138 138674
+8 "Liquid" #67b8de 108680
+9 "Jupyter Notebook" #DA5B0B 42840
+10 "Other" #616e7f 90465
