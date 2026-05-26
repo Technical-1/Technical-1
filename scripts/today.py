@@ -20,16 +20,69 @@ QUERY_COUNT = {'user_getter': 0, 'follower_getter': 0, 'graph_repos_stars': 0, '
 # Values are derived from `cloc` on team-written subdirectories only,
 # excluding upstream forks. Since the archive content is frozen, these
 # numbers don't go stale. Counted as code lines (no blanks, no comments).
+#
+# Optional `language_breakdown` distributes the additions across multiple
+# languages instead of bucketing all of it under GitHub's reported
+# primaryLanguage (which is a single language picked by byte count and
+# tends to misrepresent multi-domain repos like this archive).
 LOC_HARDCODE = {
     # AHSR senior design archive (CD1-ARHS team work).
     # Total of 21 subtree-merged sub-repos minus 6 public upstream forks
     # (ros2_control*, OrbbecSDK_ROS2, ros2_explorer, rplidar_ros2).
-    # Derived: 767,112 grand total cloc lines - 133,822 upstream = 633,290.
+    # Breakdown summed from `cloc` consolidated over the 15 team dirs.
     'AHSR-senior-design-archive': {
-        'additions': 633290,
+        'additions': 631694,
         'deletions': 0,
         'my_commits': 22,  # 1 init commit + 21 subtree-add merge commits
+        'language_breakdown': {
+            # Bulk: Gazebo world / SDF / URDF files defining the robot + sim env
+            'XML': 324028,
+            # UI saved trip data + config files
+            'JSON': 218973,
+            # Actual Python the team wrote across UI, navigator, orbbec_vision, etc.
+            'Python': 24885,
+            'YAML': 14449,
+            'C': 11319,        # raw C + C/C++ headers
+            'Text': 10099,
+            'CMake': 9974,
+            'C++': 8461,
+            'Shell': 3797,     # bash + sh + zsh combined
+            'Makefile': 2123,
+            'PowerShell': 1648,
+            'Markdown': 1128,
+            'INI': 415,
+            'Lua': 194,
+            'TypeScript': 86,
+            'IDL': 79,
+            'Gencat NLS': 35,
+            'Windows Resource File': 1,
+        },
     },
+}
+
+# GitHub Linguist colors for languages that may appear in a LOC_HARDCODE
+# language_breakdown but might not have been seen elsewhere in the user's
+# repos (so we don't have a color from a GraphQL primaryLanguage response).
+# Falls back to grey when a language isn't in this map.
+LANGUAGE_COLORS = {
+    'XML': '#0060ac',
+    'JSON': '#292929',
+    'Python': '#3572A5',
+    'YAML': '#cb171e',
+    'C': '#555555',
+    'Text': '#616e7f',
+    'CMake': '#DA3434',
+    'C++': '#f34b7d',
+    'Shell': '#89e051',
+    'Makefile': '#427819',
+    'PowerShell': '#012456',
+    'Markdown': '#083fa1',
+    'INI': '#d1dbe0',
+    'Lua': '#000080',
+    'TypeScript': '#3178c6',
+    'IDL': '#a3522f',
+    'Gencat NLS': '#616e7f',
+    'Windows Resource File': '#616e7f',
 }
 
 
@@ -480,12 +533,26 @@ def aggregate_languages(edges, data):
     totals = {}  # name -> [color, additions]
     for edge in edges:
         node = edge['node']
-        lang = node.get('primaryLanguage')
-        if not lang or not lang.get('name'):
-            continue
-        repo_hash = hashlib.sha256(node['nameWithOwner'].encode('utf-8')).hexdigest()
+        full_name = node['nameWithOwner']
+        repo_hash = hashlib.sha256(full_name.encode('utf-8')).hexdigest()
         additions = add_by_hash.get(repo_hash, 0)
         if additions == 0:
+            continue
+        # Per-repo language override: distribute additions across multiple
+        # languages per LOC_HARDCODE.language_breakdown. Useful for archive
+        # repos where GitHub's single primaryLanguage misrepresents the work.
+        _, repo_name = full_name.split('/', 1)
+        breakdown = LOC_HARDCODE.get(repo_name, {}).get('language_breakdown')
+        if breakdown:
+            for lang_name, lang_loc in breakdown.items():
+                color = LANGUAGE_COLORS.get(lang_name, '#616e7f')
+                if lang_name not in totals:
+                    totals[lang_name] = [color, 0]
+                totals[lang_name][1] += lang_loc
+            continue
+        # Default: attribute the repo's full additions to its primaryLanguage
+        lang = node.get('primaryLanguage')
+        if not lang or not lang.get('name'):
             continue
         name = lang['name']
         color = lang.get('color') or '#616e7f'
