@@ -14,23 +14,24 @@ HEADERS = {'authorization': 'token '+ os.environ['ACCESS_TOKEN']}
 USER_NAME = os.environ['USER_NAME'] # 'Andrew6rant'
 QUERY_COUNT = {'user_getter': 0, 'follower_getter': 0, 'graph_repos_stars': 0, 'recursive_loc': 0, 'graph_commits': 0, 'loc_query': 0, 'commits_by_month': 0}
 
-# Repos with frozen content where commit-additions counting is unreliable
-# (subtree-merged archives that pull in upstream forks; original sub-repo
-# history with binary-blob commits that inflate additions to millions).
-# Values are derived from `cloc` on team-written subdirectories only,
-# excluding upstream forks. Since the archive content is frozen, these
-# numbers don't go stale. Counted as code lines (no blanks, no comments).
+# Repos with frozen content where commit-additions counting via the GraphQL
+# API is unreliable (archives that pull in upstream forks via subtree merges;
+# original sub-repo history with binary-blob commits that inflate additions
+# to millions; dormant collaborator repos where the API 502s on history walks).
+# Values are derived from local `cloc` or `git log --no-merges --shortstat`.
+# Keyed by full_name (owner/repo) so we can distinguish forks with identical
+# short names (e.g. Technical-1/property-probe vs AkshayAshok2/property-probe).
 #
 # Optional `language_breakdown` distributes the additions across multiple
 # languages instead of bucketing all of it under GitHub's reported
 # primaryLanguage (which is a single language picked by byte count and
-# tends to misrepresent multi-domain repos like this archive).
+# tends to misrepresent multi-domain repos like archives).
 LOC_HARDCODE = {
     # AHSR senior design archive (CD1-ARHS team work).
     # Total of 21 subtree-merged sub-repos minus 6 public upstream forks
     # (ros2_control*, OrbbecSDK_ROS2, ros2_explorer, rplidar_ros2).
     # Breakdown summed from `cloc` consolidated over the 15 team dirs.
-    'AHSR-senior-design-archive': {
+    'Technical-1/AHSR-senior-design-archive': {
         'additions': 631694,
         'deletions': 0,
         'my_commits': 22,  # 1 init commit + 21 subtree-add merge commits
@@ -59,6 +60,35 @@ LOC_HARDCODE = {
             'Windows Resource File': 1,
         },
     },
+    # CEN3031 class project (collaborator on Akshay's repo). The repo is
+    # dormant since 2023 and GitHub's GraphQL API consistently 502s on its
+    # history walk, so we use local `git log --no-merges` numbers.
+    #
+    # GitHub reports primaryLanguage='Go' (because Linguist excludes vendored
+    # node_modules and sees only the tiny Go API backend + Angular UI), but
+    # the 376k of actual Jacob additions is overwhelmingly JavaScript from
+    # one mega-commit that accidentally committed node_modules and Angular
+    # webpack cache alongside the scraper change. The language_breakdown
+    # below splits the additions proportionally to what's actually tracked
+    # in git (per `cloc` on `git ls-files`), so the additions don't all
+    # fall into the Go bucket.
+    'AkshayAshok2/property-probe': {
+        'additions': 376404,
+        'deletions': 13506,
+        'my_commits': 36,  # non-merge commits authored by Jacob
+        'language_breakdown': {
+            'JavaScript': 306250,  # 81% — committed node_modules + webpack cache
+            'JSON': 24768,         # 6.6% — package.json files in node_modules
+            'TypeScript': 23686,   # 6.3% — Angular UI + more node_modules
+            'Markdown': 16453,     # 4.4% — README files in node_modules
+            'Python': 3360,        # 0.9% — the scraper
+            'HTML': 377,
+            'CSS': 301,
+            'YAML': 226,
+            'Go': 113,             # the API backend
+            'Text': 870,           # absorbs the small rounding gap to 376,404
+        },
+    },
 }
 
 # GitHub Linguist colors for languages that may appear in a LOC_HARDCODE
@@ -82,6 +112,10 @@ LANGUAGE_COLORS = {
     'Lua': '#000080',
     'TypeScript': '#3178c6',
     'IDL': '#a3522f',
+    'JavaScript': '#f1e05a',
+    'HTML': '#e34c26',
+    'CSS': '#563d7c',
+    'Go': '#00ADD8',
     'Gencat NLS': '#616e7f',
     'Windows Resource File': '#616e7f',
 }
@@ -455,18 +489,20 @@ def cache_builder(edges, comment_size, force_cache, loc_add=0, loc_del=0):
         if repo_hash == hashlib.sha256(edges[index]['node']['nameWithOwner'].encode('utf-8')).hexdigest():
             try:
                 live_total = edges[index]['node']['defaultBranchRef']['target']['history']['totalCount']
-                if int(commit_count) != live_total:
+                full_name = edges[index]['node']['nameWithOwner']
+                # Hardcode override fires regardless of commit_count drift —
+                # frozen-content repos shouldn't re-query GitHub even if the
+                # commit count somehow changes upstream (e.g. force-push).
+                if full_name in LOC_HARDCODE:
+                    # Use the hardcoded value and skip GraphQL queries entirely.
+                    # See LOC_HARDCODE comment for why we hardcode these.
+                    override = LOC_HARDCODE[full_name]
+                    loc = (override['additions'], override['deletions'], override['my_commits'])
+                    data[index] = repo_hash + ' ' + str(live_total) + ' ' + str(loc[2]) + ' ' + str(loc[0]) + ' ' + str(loc[1]) + '\n'
+                elif int(commit_count) != live_total:
                     # if commit count has changed, update loc for that repo
-                    owner, repo_name = edges[index]['node']['nameWithOwner'].split('/')
-                    if repo_name in LOC_HARDCODE:
-                        # Repo content is frozen and commit-additions counting
-                        # is unreliable (subtree-merge double-counting + binary
-                        # blob commits). Use the hardcoded cloc-derived value
-                        # and skip the GraphQL queries entirely.
-                        override = LOC_HARDCODE[repo_name]
-                        loc = (override['additions'], override['deletions'], override['my_commits'])
-                    else:
-                        loc = recursive_loc(owner, repo_name, data, cache_comment)
+                    owner, repo_name = full_name.split('/')
+                    loc = recursive_loc(owner, repo_name, data, cache_comment)
                     if loc == 'SKIP':
                         # Keep yesterday's LOC values; only update commit_count to
                         # live_total. Zeroing here would corrupt the displayed total
@@ -558,8 +594,7 @@ def aggregate_languages(edges, data):
         # Per-repo language override: distribute additions across multiple
         # languages per LOC_HARDCODE.language_breakdown. Useful for archive
         # repos where GitHub's single primaryLanguage misrepresents the work.
-        _, repo_name = full_name.split('/', 1)
-        breakdown = LOC_HARDCODE.get(repo_name, {}).get('language_breakdown')
+        breakdown = LOC_HARDCODE.get(full_name, {}).get('language_breakdown')
         if breakdown:
             for lang_name, lang_loc in breakdown.items():
                 color = LANGUAGE_COLORS.get(lang_name, '#616e7f')
