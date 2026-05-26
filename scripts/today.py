@@ -275,6 +275,9 @@ def recursive_loc(owner, repo_name, data, cache_comment, addition_total=0, delet
                                             id
                                         }
                                     }
+                                    parents {
+                                        totalCount
+                                    }
                                     deletions
                                     additions
                                 }
@@ -336,14 +339,27 @@ def recursive_loc(owner, repo_name, data, cache_comment, addition_total=0, delet
 
 def loc_counter_one_repo(owner, repo_name, data, cache_comment, history, addition_total, deletion_total, my_commits):
     """
-    Recursively call recursive_loc (since GraphQL can only search 100 commits at a time) 
-    only adds the LOC value of commits authored by me
+    Recursively call recursive_loc (since GraphQL can only search 100 commits at a time)
+    only adds the LOC value of commits authored by me.
+
+    Merge commits are skipped because GitHub's GraphQL Commit.additions on a
+    merge reports the COMBINED DIFF (the union of all changes brought in by
+    that merge), which double-counts work already counted in the underlying
+    non-merge commits. AkshayAshok2/property-probe was reporting 8.6M lines
+    from this for ~376k real lines — a 23x inflation from 26 PR-merge commits
+    re-counting the same content. Filtering on parents.totalCount > 1 mirrors
+    `git log --no-merges` and gives an accurate per-author LOC total.
     """
     for node in history['edges']:
-        if node['node']['author']['user'] == OWNER_ID:
-            my_commits += 1
-            addition_total += node['node']['additions']
-            deletion_total += node['node']['deletions']
+        if node['node']['author']['user'] != OWNER_ID:
+            continue
+        # Skip merge commits — their additions/deletions are combined diffs
+        # that double-count work already attributed to the underlying commits.
+        if node['node']['parents']['totalCount'] > 1:
+            continue
+        my_commits += 1
+        addition_total += node['node']['additions']
+        deletion_total += node['node']['deletions']
 
     if history['edges'] == [] or not history['pageInfo']['hasNextPage']:
         return addition_total, deletion_total, my_commits
