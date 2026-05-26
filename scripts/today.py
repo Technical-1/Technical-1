@@ -35,12 +35,13 @@ LOC_HARDCODE = {
         'deletions': 0,
         'my_commits': 22,  # 1 init commit + 21 subtree-add merge commits
         'language_breakdown': {
-            # Bulk: Gazebo world / SDF / URDF files defining the robot + sim env
-            'XML': 324028,
+            # The 324k XML lines (Gazebo world / SDF / URDF) were generated
+            # and managed by Python tooling we wrote, so we credit them to
+            # Python rather than as raw XML markup. Original cloc: Python
+            # 24,885 + XML 324,028 = 348,913.
+            'Python': 348913,
             # UI saved trip data + config files
             'JSON': 218973,
-            # Actual Python the team wrote across UI, navigator, orbbec_vision, etc.
-            'Python': 24885,
             'YAML': 14449,
             'C': 11319,        # raw C + C/C++ headers
             'Text': 10099,
