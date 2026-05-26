@@ -1,6 +1,6 @@
 1 "TypeScript" #3178c6 3254011
 2 "Python" #3572A5 2170412
-3 "JavaScript" #f1e05a 626004
+3 "JavaScript" #f1e05a 629753
 4 "JSON" #292929 218973
 5 "Rust" #dea584 180033
 6 "Swift" #F05138 138674
