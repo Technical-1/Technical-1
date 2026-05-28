@@ -158,13 +158,32 @@ def abbreviate_number(num, suffix=''):
     return f'{num:,}{suffix}'
 
 
-def simple_request(func_name, query, variables):
+def simple_request(func_name, query, variables, retry_count=0):
     """
     Returns a request, or raises an Exception if the response does not succeed.
+
+    Retries transient GitHub backend failures (502/503/504 gateway errors and
+    network exceptions) with exponential backoff, mirroring recursive_loc().
+    GitHub's GraphQL backend returns intermittent 502s on heavy queries like
+    loc_query; a single one used to abort the whole build, which is what broke
+    two consecutive scheduled runs in 2026-05.
     """
-    request = requests.post('https://api.github.com/graphql', json={'query': query, 'variables':variables}, headers=HEADERS)
+    try:
+        request = requests.post('https://api.github.com/graphql', json={'query': query, 'variables':variables}, headers=HEADERS)
+    except requests.exceptions.RequestException as e:
+        if retry_count < 5:
+            wait_time = (2 ** retry_count) * 3  # 3s, 6s, 12s, 24s, 48s
+            print(f'{func_name} network error ({e}), retrying in {wait_time}s (attempt {retry_count + 1}/5)...')
+            time.sleep(wait_time)
+            return simple_request(func_name, query, variables, retry_count + 1)
+        raise Exception(func_name, ' network error after 5 retries:', e, QUERY_COUNT)
     if request.status_code == 200:
         return request
+    if request.status_code in [502, 503, 504] and retry_count < 5:
+        wait_time = (2 ** retry_count) * 3  # 3s, 6s, 12s, 24s, 48s
+        print(f'{func_name} got {request.status_code}, retrying in {wait_time}s (attempt {retry_count + 1}/5)...')
+        time.sleep(wait_time)
+        return simple_request(func_name, query, variables, retry_count + 1)
     raise Exception(func_name, ' has failed with a', request.status_code, request.text, QUERY_COUNT)
 
 
@@ -550,19 +569,31 @@ def flush_cache(edges, filename, comment_size):
             f.write(prior_by_hash.get(repo_hash, repo_hash + ' 0 0 0 0\n'))
 
 
-def bar_blocks_for(additions, top_additions):
+# Left-aligned Unicode partial-block glyphs, indexed by eighths of a cell:
+# index 0 = empty, 1..7 = 1/8..7/8 filled, 8 = full block.
+PARTIAL_BLOCKS = ' ▏▎▍▌▋▊▉█'
+
+
+def render_bar(additions, top_additions, width=20):
     """
-    Compute Unicode-block bar length for a language given its additions
-    and the additions of the top language. Top language gets exactly 20
-    blocks; others scale proportionally with a floor of 1 for any
-    non-zero value. Returns 0 only when additions is 0 (or top is 0).
+    Build a `width`-cell bar whose filled length is proportional to
+    additions/top_additions, padded with spaces to a constant width so the
+    columns after it stay aligned (white-space: pre preserves the padding).
+
+    The top language fills all `width` cells; smaller languages render with
+    1/8-cell precision using Unicode partial-block glyphs. Previously every
+    language under ~5% floored to a single full block, so e.g. a 1.8%-of-total
+    bucket and a 0.6% one looked identical — now their lengths differ visibly.
+    Any non-zero value renders at least 1/8 of a cell so it stays visible.
     """
-    if additions == 0 or top_additions == 0:
-        return 0
-    if additions >= top_additions:
-        return 20
-    import math
-    return max(1, math.floor(20 * additions / top_additions))
+    if additions <= 0 or top_additions <= 0:
+        return ' ' * width
+    eighths = min(round(width * 8 * additions / top_additions), width * 8)
+    if eighths == 0:
+        eighths = 1  # keep any non-zero language visible
+    full, rem = divmod(eighths, 8)
+    bar = '█' * full + (PARTIAL_BLOCKS[rem] if rem else '')
+    return bar + ' ' * (width - len(bar))
 
 
 def aggregate_languages(edges, data):
@@ -793,8 +824,7 @@ def render_languages_svg(commits, buckets, mode, output_path):
     else:
         y = 50
         for b in buckets:
-            blocks = bar_blocks_for(b['additions'], top)
-            bar = '█' * blocks + ' ' * (20 - blocks)
+            bar = render_bar(b['additions'], top)
             pct_raw = 100 * b['additions'] / total
             # One decimal for sub-1% so 0.3% doesn't round to 0%; integer otherwise.
             # Round to 1 decimal first so values like 0.96% become '1%' not '1.0%'.
