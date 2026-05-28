@@ -1,10 +1,10 @@
-1 "TypeScript" #3178c6 3277697
-2 "Python" #3572A5 2173828
-3 "JavaScript" #f1e05a 936004
-4 "JSON" #292929 243741
-5 "Rust" #dea584 180033
-6 "Swift" #F05138 138674
-7 "Liquid" #67b8de 108680
-8 "Jupyter Notebook" #DA5B0B 42840
-9 "HTML" #e34c26 40529
-10 "Other" #616e7f 131998
+1 "TypeScript" #3178c6 3297119
+2 "Python" #3572A5 2231141
+3 "JavaScript" #f1e05a 952060
+4 "Java" #b07219 410415
+5 "JSON" #292929 243741
+6 "Rust" #dea584 177830
+7 "Swift" #F05138 147986
+8 "Liquid" #67b8de 108680
+9 "Jupyter Notebook" #DA5B0B 42840
+10 "Other" #616e7f 168806
