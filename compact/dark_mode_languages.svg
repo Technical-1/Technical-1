@@ -24,9 +24,9 @@ text, tspan {white-space: pre;}
 <rect x="120" y="174" width="16" height="1" fill="#7ee787" rx="2"/>
 <rect x="145" y="168" width="16" height="7" fill="#7ee787" rx="2"/>
 <rect x="170" y="161" width="16" height="14" fill="#7ee787" rx="2"/>
-<rect x="195" y="135" width="16" height="40" fill="#7ee787" rx="2"/>
-<rect x="220" y="100" width="16" height="75" fill="#7ee787" rx="2"/>
-<rect x="245" y="153" width="16" height="22" fill="#7ee787" rx="2"/>
+<rect x="195" y="136" width="16" height="39" fill="#7ee787" rx="2"/>
+<rect x="220" y="102" width="16" height="73" fill="#7ee787" rx="2"/>
+<rect x="245" y="154" width="16" height="21" fill="#7ee787" rx="2"/>
 <rect x="270" y="173" width="16" height="2" fill="#7ee787" rx="2"/>
 <rect x="295" y="40" width="16" height="135" fill="#7ee787" rx="2"/>
 <text fill="#c9d1d9" class="cc">
@@ -43,12 +43,12 @@ text, tspan {white-space: pre;}
 <tspan x="278" y="195" text-anchor="middle">A</tspan>
 <tspan x="303" y="195" text-anchor="middle">M</tspan>
 </text>
-<text x="15" y="225" fill="#c9d1d9"><tspan x="15" y="225" class="cc">. </tspan><tspan class="key">Last 12mo: </tspan><tspan class="value">4,822</tspan><tspan class="cc"> contributions</tspan></text>
+<text x="15" y="225" fill="#c9d1d9"><tspan x="15" y="225" class="cc">. </tspan><tspan class="key">Last 12mo: </tspan><tspan class="value">4,868</tspan><tspan class="cc"> contributions</tspan></text>
 <text x="340" y="20" fill="#c9d1d9">
 <tspan x="340" y="30">- Languages by LOC</tspan> ———————————————————————————————
 <tspan x="340" y="50" class="cc">. </tspan><tspan class="key">TypeScript    </tspan><tspan> </tspan><tspan fill="#3178c6">████████████████████</tspan><tspan class="value">  3.3M</tspan><tspan class="cc"> (  42%)</tspan>
 <tspan x="340" y="70" class="cc">. </tspan><tspan class="key">Python        </tspan><tspan> </tspan><tspan fill="#3572A5">█████████████▌      </tspan><tspan class="value">  2.2M</tspan><tspan class="cc"> (  29%)</tspan>
-<tspan x="340" y="90" class="cc">. </tspan><tspan class="key">JavaScript    </tspan><tspan> </tspan><tspan fill="#f1e05a">█████▊              </tspan><tspan class="value">  952K</tspan><tspan class="cc"> (  12%)</tspan>
+<tspan x="340" y="90" class="cc">. </tspan><tspan class="key">JavaScript    </tspan><tspan> </tspan><tspan fill="#f1e05a">█████▊              </tspan><tspan class="value">  953K</tspan><tspan class="cc"> (  12%)</tspan>
 <tspan x="340" y="110" class="cc">. </tspan><tspan class="key">Java          </tspan><tspan> </tspan><tspan fill="#b07219">██▌                 </tspan><tspan class="value">  410K</tspan><tspan class="cc"> (   5%)</tspan>
 <tspan x="340" y="130" class="cc">. </tspan><tspan class="key">JSON          </tspan><tspan> </tspan><tspan fill="#292929">█▌                  </tspan><tspan class="value">  244K</tspan><tspan class="cc"> (   3%)</tspan>
 <tspan x="340" y="150" class="cc">. </tspan><tspan class="key">Rust          </tspan><tspan> </tspan><tspan fill="#dea584">█▏                  </tspan><tspan class="value">  178K</tspan><tspan class="cc"> (   2%)</tspan>
