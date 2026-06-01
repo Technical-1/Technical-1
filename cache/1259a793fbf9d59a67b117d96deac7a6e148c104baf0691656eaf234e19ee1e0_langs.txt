@@ -1,10 +1,10 @@
-1 "TypeScript" #3178c6 3332343
-2 "Python" #3572A5 2233487
-3 "JavaScript" #f1e05a 978191
+1 "TypeScript" #3178c6 3345469
+2 "Python" #3572A5 2236240
+3 "JavaScript" #f1e05a 1007066
 4 "Java" #b07219 410415
 5 "JSON" #292929 243741
 6 "Rust" #dea584 177830
-7 "Swift" #F05138 147986
+7 "Swift" #F05138 151182
 8 "Liquid" #67b8de 108680
 9 "Jupyter Notebook" #DA5B0B 42840
-10 "Other" #616e7f 169523
+10 "Other" #616e7f 170637
