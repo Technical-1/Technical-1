@@ -19,42 +19,42 @@ text, tspan {white-space: pre;}
 </text>
 <rect x="20" y="175" width="16" height="1" fill="#7ee787" rx="2"/>
 <rect x="45" y="175" width="16" height="1" fill="#7ee787" rx="2"/>
-<rect x="70" y="175" width="16" height="1" fill="#7ee787" rx="2"/>
-<rect x="95" y="170" width="16" height="5" fill="#7ee787" rx="2"/>
-<rect x="120" y="168" width="16" height="7" fill="#7ee787" rx="2"/>
-<rect x="145" y="148" width="16" height="27" fill="#7ee787" rx="2"/>
-<rect x="170" y="122" width="16" height="53" fill="#7ee787" rx="2"/>
-<rect x="195" y="159" width="16" height="16" fill="#7ee787" rx="2"/>
-<rect x="220" y="175" width="16" height="1" fill="#7ee787" rx="2"/>
-<rect x="245" y="40" width="16" height="135" fill="#7ee787" rx="2"/>
-<rect x="270" y="77" width="16" height="98" fill="#7ee787" rx="2"/>
-<rect x="295" y="151" width="16" height="24" fill="#7ee787" rx="2"/>
+<rect x="70" y="171" width="16" height="4" fill="#7ee787" rx="2"/>
+<rect x="95" y="168" width="16" height="7" fill="#7ee787" rx="2"/>
+<rect x="120" y="149" width="16" height="26" fill="#7ee787" rx="2"/>
+<rect x="145" y="122" width="16" height="53" fill="#7ee787" rx="2"/>
+<rect x="170" y="159" width="16" height="16" fill="#7ee787" rx="2"/>
+<rect x="195" y="175" width="16" height="1" fill="#7ee787" rx="2"/>
+<rect x="220" y="40" width="16" height="135" fill="#7ee787" rx="2"/>
+<rect x="245" y="77" width="16" height="98" fill="#7ee787" rx="2"/>
+<rect x="270" y="125" width="16" height="50" fill="#7ee787" rx="2"/>
+<rect x="295" y="142" width="16" height="33" fill="#7ee787" rx="2"/>
 <text fill="#c9d1d9" class="cc">
-<tspan x="28" y="195" text-anchor="middle">A</tspan>
-<tspan x="53" y="195" text-anchor="middle">S</tspan>
-<tspan x="78" y="195" text-anchor="middle">O</tspan>
-<tspan x="103" y="195" text-anchor="middle">N</tspan>
-<tspan x="128" y="195" text-anchor="middle">D</tspan>
-<tspan x="153" y="195" text-anchor="middle">J</tspan>
-<tspan x="178" y="195" text-anchor="middle">F</tspan>
-<tspan x="203" y="195" text-anchor="middle">M</tspan>
-<tspan x="228" y="195" text-anchor="middle">A</tspan>
-<tspan x="253" y="195" text-anchor="middle">M</tspan>
+<tspan x="28" y="195" text-anchor="middle">S</tspan>
+<tspan x="53" y="195" text-anchor="middle">O</tspan>
+<tspan x="78" y="195" text-anchor="middle">N</tspan>
+<tspan x="103" y="195" text-anchor="middle">D</tspan>
+<tspan x="128" y="195" text-anchor="middle">J</tspan>
+<tspan x="153" y="195" text-anchor="middle">F</tspan>
+<tspan x="178" y="195" text-anchor="middle">M</tspan>
+<tspan x="203" y="195" text-anchor="middle">A</tspan>
+<tspan x="228" y="195" text-anchor="middle">M</tspan>
+<tspan x="253" y="195" text-anchor="middle">J</tspan>
 <tspan x="278" y="195" text-anchor="middle">J</tspan>
-<tspan x="303" y="195" text-anchor="middle">J</tspan>
+<tspan x="303" y="195" text-anchor="middle">A</tspan>
 </text>
-<text x="15" y="225" fill="#c9d1d9"><tspan x="15" y="225" class="cc">. </tspan><tspan class="key">Last 12mo: </tspan><tspan class="value">8,032</tspan><tspan class="cc"> contributions</tspan></text>
+<text x="15" y="225" fill="#c9d1d9"><tspan x="15" y="225" class="cc">. </tspan><tspan class="key">Last 12mo: </tspan><tspan class="value">9,284</tspan><tspan class="cc"> contributions</tspan></text>
 <text x="340" y="20" fill="#c9d1d9">
 <tspan x="340" y="30">- Languages by LOC</tspan> ———————————————————————————————
-<tspan x="340" y="50" class="cc">. </tspan><tspan class="key">TypeScript    </tspan><tspan> </tspan><tspan fill="#3178c6">████████████████████</tspan><tspan class="value">  5.1M</tspan><tspan class="cc"> (  47%)</tspan>
-<tspan x="340" y="70" class="cc">. </tspan><tspan class="key">Python        </tspan><tspan> </tspan><tspan fill="#3572A5">█████████▎          </tspan><tspan class="value">  2.3M</tspan><tspan class="cc"> (  22%)</tspan>
-<tspan x="340" y="90" class="cc">. </tspan><tspan class="key">JavaScript    </tspan><tspan> </tspan><tspan fill="#f1e05a">████▎               </tspan><tspan class="value">  1.1M</tspan><tspan class="cc"> (  10%)</tspan>
-<tspan x="340" y="110" class="cc">. </tspan><tspan class="key">HTML          </tspan><tspan> </tspan><tspan fill="#e34c26">████                </tspan><tspan class="value">  1.0M</tspan><tspan class="cc"> (  10%)</tspan>
-<tspan x="340" y="130" class="cc">. </tspan><tspan class="key">Java          </tspan><tspan> </tspan><tspan fill="#b07219">█▋                  </tspan><tspan class="value">  410K</tspan><tspan class="cc"> (   4%)</tspan>
-<tspan x="340" y="150" class="cc">. </tspan><tspan class="key">JSON          </tspan><tspan> </tspan><tspan fill="#292929">█                   </tspan><tspan class="value">  244K</tspan><tspan class="cc"> (   2%)</tspan>
+<tspan x="340" y="50" class="cc">. </tspan><tspan class="key">TypeScript    </tspan><tspan> </tspan><tspan fill="#3178c6">████████████████████</tspan><tspan class="value">  5.4M</tspan><tspan class="cc"> (  47%)</tspan>
+<tspan x="340" y="70" class="cc">. </tspan><tspan class="key">Python        </tspan><tspan> </tspan><tspan fill="#3572A5">█████████▊          </tspan><tspan class="value">  2.6M</tspan><tspan class="cc"> (  23%)</tspan>
+<tspan x="340" y="90" class="cc">. </tspan><tspan class="key">HTML          </tspan><tspan> </tspan><tspan fill="#e34c26">████▎               </tspan><tspan class="value">  1.1M</tspan><tspan class="cc"> (  10%)</tspan>
+<tspan x="340" y="110" class="cc">. </tspan><tspan class="key">JavaScript    </tspan><tspan> </tspan><tspan fill="#f1e05a">████                </tspan><tspan class="value">  1.1M</tspan><tspan class="cc"> (   9%)</tspan>
+<tspan x="340" y="130" class="cc">. </tspan><tspan class="key">Java          </tspan><tspan> </tspan><tspan fill="#b07219">█▌                  </tspan><tspan class="value">  410K</tspan><tspan class="cc"> (   4%)</tspan>
+<tspan x="340" y="150" class="cc">. </tspan><tspan class="key">JSON          </tspan><tspan> </tspan><tspan fill="#292929">▉                   </tspan><tspan class="value">  244K</tspan><tspan class="cc"> (   2%)</tspan>
 <tspan x="340" y="170" class="cc">. </tspan><tspan class="key">Rust          </tspan><tspan> </tspan><tspan fill="#dea584">▉                   </tspan><tspan class="value">  226K</tspan><tspan class="cc"> (   2%)</tspan>
-<tspan x="340" y="190" class="cc">. </tspan><tspan class="key">Liquid        </tspan><tspan> </tspan><tspan fill="#67b8de">▍                   </tspan><tspan class="value">  109K</tspan><tspan class="cc"> (   1%)</tspan>
-<tspan x="340" y="210" class="cc">. </tspan><tspan class="key">Swift         </tspan><tspan> </tspan><tspan fill="#F05138">▍                   </tspan><tspan class="value">   81K</tspan><tspan class="cc"> ( 0.8%)</tspan>
-<tspan x="340" y="230" class="cc">. </tspan><tspan class="key">Other         </tspan><tspan> </tspan><tspan fill="#616e7f">▋                   </tspan><tspan class="value">  158K</tspan><tspan class="cc"> (   2%)</tspan>
+<tspan x="340" y="190" class="cc">. </tspan><tspan class="key">Liquid        </tspan><tspan> </tspan><tspan fill="#67b8de">▍                   </tspan><tspan class="value">  102K</tspan><tspan class="cc"> ( 0.9%)</tspan>
+<tspan x="340" y="210" class="cc">. </tspan><tspan class="key">Swift         </tspan><tspan> </tspan><tspan fill="#F05138">▍                   </tspan><tspan class="value">   86K</tspan><tspan class="cc"> ( 0.7%)</tspan>
+<tspan x="340" y="230" class="cc">. </tspan><tspan class="key">Other         </tspan><tspan> </tspan><tspan fill="#616e7f">▋                   </tspan><tspan class="value">  161K</tspan><tspan class="cc"> (   1%)</tspan>
 </text>
 </svg>
