@@ -158,6 +158,45 @@ def abbreviate_number(num, suffix=''):
     return f'{num:,}{suffix}'
 
 
+GRAPHQL_WARNINGS_SEEN = set()
+
+
+def warn_on_graphql_errors(func_name, request):
+    """
+    GraphQL signals per-field failures as HTTP 200 with a top-level 'errors'
+    array plus nulls standing in for whatever it could not resolve, so a
+    partial response is indistinguishable from a complete one unless we look.
+    Nothing did, which is how an ACCESS_TOKEN that had lost access to some
+    repositories stayed invisible for 20 nightly builds in 2026-07/08.
+
+    Warns rather than raising: understated counts still beat no README update,
+    and the warning names the cause well enough to act on.
+
+    Errors are deduped by signature because loc_query and recursive_loc
+    paginate, and a persistent permissions gap would otherwise print on every
+    single request and bury the rest of the log.
+    """
+    try:
+        payload = request.json()
+    except ValueError:
+        return
+    errors = payload.get('errors')
+    if not errors:
+        return
+    for err in errors:
+        etype = err.get('type', 'UNKNOWN')
+        path = '.'.join(str(p) for p in err.get('path', []) or [])
+        message = err.get('message', '')
+        signature = (etype, path, message)
+        if signature in GRAPHQL_WARNINGS_SEEN:
+            continue
+        GRAPHQL_WARNINGS_SEEN.add(signature)
+        print(f'WARNING: {func_name} GraphQL [{etype}] {path}: {message}')
+        if etype in ('NOT_FOUND', 'FORBIDDEN'):
+            print('         Counts will be understated. ACCESS_TOKEN cannot read this '
+                  'resource; if it is an org repo, grant the token access to that org.')
+
+
 def simple_request(func_name, query, variables, retry_count=0):
     """
     Returns a request, or raises an Exception if the response does not succeed.
@@ -178,6 +217,7 @@ def simple_request(func_name, query, variables, retry_count=0):
             return simple_request(func_name, query, variables, retry_count + 1)
         raise Exception(func_name, ' network error after 5 retries:', e, QUERY_COUNT)
     if request.status_code == 200:
+        warn_on_graphql_errors(func_name, request)
         return request
     if request.status_code in [502, 503, 504] and retry_count < 5:
         wait_time = (2 ** retry_count) * 3  # 3s, 6s, 12s, 24s, 48s
@@ -250,7 +290,15 @@ def filter_owned_forks(edges):
     would double-count the same commits (e.g. an owned fork of a repo the user
     is also a COLLABORATOR on). Forks whose parent is NOT in the list still
     count, since their commits are the only place the user's work appears.
+
+    Edges whose node is null are dropped first. GitHub answers HTTP 200 but
+    sets `node: null` for any repository the token cannot resolve, keeping the
+    edge in place, so a permissions gap arrives here looking like valid data.
+    Subscripting those nulls broke every nightly build from 2026-07-23 onward;
+    simple_request() now prints the matching GraphQL error so the cause is
+    visible in the Actions log instead of surfacing as a TypeError.
     """
+    edges = [e for e in edges if e.get('node')]
     all_names = {e['node']['nameWithOwner'] for e in edges}
     return [
         e for e in edges
@@ -896,9 +944,13 @@ def force_close_file(data, cache_comment):
 def stars_counter(data):
     """
     Count total stars in repositories owned by me
+
+    Skips null nodes for the same reason filter_owned_forks does; see there.
     """
     total_stars = 0
-    for node in data: total_stars += node['node']['stargazers']['totalCount']
+    for node in data:
+        if not node.get('node'): continue
+        total_stars += node['node']['stargazers']['totalCount']
     return total_stars
 
 
