@@ -310,10 +310,21 @@ def graph_repos_stars(count_type, owner_affiliation, cursor=None, edges_acc=None
     """
     Uses GitHub's GraphQL v4 API to count repositories or sum stars, excluding
     owned forks whose upstream parent is also in the user's list.
+
+    stargazers is requested only for count_type == 'stars'. It is non-nullable
+    in GitHub's schema, so when the token cannot read a repository's starring
+    data the resulting null propagates up and wipes out the whole node, taking
+    a repository the caller could otherwise have counted. Asking for it only
+    when it is actually consumed keeps the repo counts accurate even while the
+    token's starring access is incomplete.
     """
     if edges_acc is None:
         edges_acc = []
     query_count('graph_repos_stars')
+    stargazers_field = '''
+                            stargazers {
+                                totalCount
+                            }''' if count_type == 'stars' else ''
     query = '''
     query ($owner_affiliation: [RepositoryAffiliation], $login: String!, $cursor: String) {
         user(login: $login) {
@@ -325,10 +336,7 @@ def graph_repos_stars(count_type, owner_affiliation, cursor=None, edges_acc=None
                             isFork
                             parent {
                                 nameWithOwner
-                            }
-                            stargazers {
-                                totalCount
-                            }
+                            }%s
                         }
                     }
                 }
@@ -338,7 +346,7 @@ def graph_repos_stars(count_type, owner_affiliation, cursor=None, edges_acc=None
                 }
             }
         }
-    }'''
+    }''' % stargazers_field
     variables = {'owner_affiliation': owner_affiliation, 'login': USER_NAME, 'cursor': cursor}
     request = simple_request(graph_repos_stars.__name__, query, variables)
     page = request.json()['data']['user']['repositories']

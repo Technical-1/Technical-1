@@ -156,6 +156,62 @@ def warn_on_graphql_errors_survives_non_json_body():
     assert capture_warnings(None) == []
 
 
+def run_graph_repos_stars(count_type, edges):
+    """Call graph_repos_stars with simple_request stubbed; returns (result, query)."""
+    sent = {}
+
+    def fake_simple_request(func_name, query, variables, retry_count=0):
+        sent['query'] = query
+        return FakeResponse({'data': {'user': {'repositories': {
+            'edges': edges,
+            'pageInfo': {'endCursor': None, 'hasNextPage': False},
+        }}}})
+
+    original = today.simple_request
+    today.simple_request = fake_simple_request
+    try:
+        result = today.graph_repos_stars(count_type, ['OWNER'])
+    finally:
+        today.simple_request = original
+    return result, sent['query']
+
+
+@test
+def repos_count_does_not_request_stargazers():
+    """stargazers is non-nullable; requesting it unused can null whole nodes."""
+    _, query = run_graph_repos_stars('repos', [edge('Technical-1/a')])
+    assert 'stargazers' not in query, query
+
+
+@test
+def stars_count_still_requests_stargazers():
+    """The stars caller genuinely needs the field."""
+    _, query = run_graph_repos_stars('stars', [edge('Technical-1/a', stars=5)])
+    assert 'stargazers' in query, query
+
+
+@test
+def repos_count_survives_null_node_from_graphql():
+    """End to end: the exact line-1101 shape that broke the nightly build."""
+    result, _ = run_graph_repos_stars('repos', [
+        edge('Technical-1/a'),
+        {'node': None},
+        edge('Technical-1/b'),
+    ])
+    assert result == 2, result
+
+
+@test
+def stars_count_survives_null_node_from_graphql():
+    """Same, for the stars path."""
+    result, _ = run_graph_repos_stars('stars', [
+        edge('Technical-1/a', stars=5),
+        {'node': None},
+        edge('Technical-1/b', stars=6),
+    ])
+    assert result == 11, result
+
+
 if __name__ == '__main__':
     failed = 0
     for t in TESTS:
