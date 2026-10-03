@@ -28,7 +28,7 @@ text, tspan {white-space: pre;}
 <rect x="220" y="121" width="16" height="54" fill="#7ee787" rx="2"/>
 <rect x="245" y="42" width="16" height="133" fill="#7ee787" rx="2"/>
 <rect x="270" y="130" width="16" height="45" fill="#7ee787" rx="2"/>
-<rect x="295" y="174" width="16" height="1" fill="#7ee787" rx="2"/>
+<rect x="295" y="172" width="16" height="3" fill="#7ee787" rx="2"/>
 <text fill="#c9d1d9" class="cc">
 <tspan x="28" y="195" text-anchor="middle">N</tspan>
 <tspan x="53" y="195" text-anchor="middle">D</tspan>
@@ -43,7 +43,7 @@ text, tspan {white-space: pre;}
 <tspan x="278" y="195" text-anchor="middle">S</tspan>
 <tspan x="303" y="195" text-anchor="middle">O</tspan>
 </text>
-<text x="15" y="225" fill="#c9d1d9"><tspan x="15" y="225" class="cc">. </tspan><tspan class="key">Last 12mo: </tspan><tspan class="value">12,569</tspan><tspan class="cc"> contributions</tspan></text>
+<text x="15" y="225" fill="#c9d1d9"><tspan x="15" y="225" class="cc">. </tspan><tspan class="key">Last 12mo: </tspan><tspan class="value">12,599</tspan><tspan class="cc"> contributions</tspan></text>
 <text x="340" y="20" fill="#c9d1d9">
 <tspan x="340" y="30">- Languages by LOC</tspan> ———————————————————————————————
 <tspan x="340" y="50" class="cc">. </tspan><tspan class="key">TypeScript    </tspan><tspan> </tspan><tspan fill="#3178c6">████████████████████</tspan><tspan class="value">  6.1M</tspan><tspan class="cc"> (  41%)</tspan>
