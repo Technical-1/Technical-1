@@ -18,17 +18,17 @@ text, tspan {white-space: pre;}
 <tspan x="15" y="30">- Contributions / month</tspan> ———————
 </text>
 <rect x="20" y="171" width="16" height="4" fill="#7ee787" rx="2"/>
-<rect x="45" y="168" width="16" height="7" fill="#7ee787" rx="2"/>
-<rect x="70" y="149" width="16" height="26" fill="#7ee787" rx="2"/>
-<rect x="95" y="123" width="16" height="52" fill="#7ee787" rx="2"/>
+<rect x="45" y="169" width="16" height="6" fill="#7ee787" rx="2"/>
+<rect x="70" y="150" width="16" height="25" fill="#7ee787" rx="2"/>
+<rect x="95" y="120" width="16" height="55" fill="#7ee787" rx="2"/>
 <rect x="120" y="159" width="16" height="16" fill="#7ee787" rx="2"/>
 <rect x="145" y="175" width="16" height="1" fill="#7ee787" rx="2"/>
 <rect x="170" y="40" width="16" height="135" fill="#7ee787" rx="2"/>
-<rect x="195" y="77" width="16" height="98" fill="#7ee787" rx="2"/>
-<rect x="220" y="121" width="16" height="54" fill="#7ee787" rx="2"/>
-<rect x="245" y="42" width="16" height="133" fill="#7ee787" rx="2"/>
-<rect x="270" y="130" width="16" height="45" fill="#7ee787" rx="2"/>
-<rect x="295" y="158" width="16" height="17" fill="#7ee787" rx="2"/>
+<rect x="195" y="79" width="16" height="96" fill="#7ee787" rx="2"/>
+<rect x="220" y="123" width="16" height="52" fill="#7ee787" rx="2"/>
+<rect x="245" y="45" width="16" height="130" fill="#7ee787" rx="2"/>
+<rect x="270" y="131" width="16" height="44" fill="#7ee787" rx="2"/>
+<rect x="295" y="149" width="16" height="26" fill="#7ee787" rx="2"/>
 <text fill="#c9d1d9" class="cc">
 <tspan x="28" y="195" text-anchor="middle">N</tspan>
 <tspan x="53" y="195" text-anchor="middle">D</tspan>
@@ -43,18 +43,18 @@ text, tspan {white-space: pre;}
 <tspan x="278" y="195" text-anchor="middle">S</tspan>
 <tspan x="303" y="195" text-anchor="middle">O</tspan>
 </text>
-<text x="15" y="225" fill="#c9d1d9"><tspan x="15" y="225" class="cc">. </tspan><tspan class="key">Last 12mo: </tspan><tspan class="value">12,916</tspan><tspan class="cc"> contributions</tspan></text>
+<text x="15" y="225" fill="#c9d1d9"><tspan x="15" y="225" class="cc">. </tspan><tspan class="key">Last 12mo: </tspan><tspan class="value">13,350</tspan><tspan class="cc"> contributions</tspan></text>
 <text x="340" y="20" fill="#c9d1d9">
 <tspan x="340" y="30">- Languages by LOC</tspan> ———————————————————————————————
 <tspan x="340" y="50" class="cc">. </tspan><tspan class="key">TypeScript    </tspan><tspan> </tspan><tspan fill="#3178c6">████████████████████</tspan><tspan class="value">  6.1M</tspan><tspan class="cc"> (  40%)</tspan>
-<tspan x="340" y="70" class="cc">. </tspan><tspan class="key">Python        </tspan><tspan> </tspan><tspan fill="#3572A5">█████████▊          </tspan><tspan class="value">  3.0M</tspan><tspan class="cc"> (  20%)</tspan>
-<tspan x="340" y="90" class="cc">. </tspan><tspan class="key">HTML          </tspan><tspan> </tspan><tspan fill="#e34c26">████████▏           </tspan><tspan class="value">  2.5M</tspan><tspan class="cc"> (  17%)</tspan>
+<tspan x="340" y="70" class="cc">. </tspan><tspan class="key">Python        </tspan><tspan> </tspan><tspan fill="#3572A5">██████████          </tspan><tspan class="value">  3.0M</tspan><tspan class="cc"> (  20%)</tspan>
+<tspan x="340" y="90" class="cc">. </tspan><tspan class="key">HTML          </tspan><tspan> </tspan><tspan fill="#e34c26">████████▎           </tspan><tspan class="value">  2.5M</tspan><tspan class="cc"> (  16%)</tspan>
 <tspan x="340" y="110" class="cc">. </tspan><tspan class="key">Swift         </tspan><tspan> </tspan><tspan fill="#F05138">████▏               </tspan><tspan class="value">  1.3M</tspan><tspan class="cc"> (   8%)</tspan>
 <tspan x="340" y="130" class="cc">. </tspan><tspan class="key">JavaScript    </tspan><tspan> </tspan><tspan fill="#f1e05a">███▌                </tspan><tspan class="value">  1.1M</tspan><tspan class="cc"> (   7%)</tspan>
 <tspan x="340" y="150" class="cc">. </tspan><tspan class="key">Java          </tspan><tspan> </tspan><tspan fill="#b07219">█▍                  </tspan><tspan class="value">  410K</tspan><tspan class="cc"> (   3%)</tspan>
-<tspan x="340" y="170" class="cc">. </tspan><tspan class="key">JSON          </tspan><tspan> </tspan><tspan fill="#292929">▊                   </tspan><tspan class="value">  244K</tspan><tspan class="cc"> (   2%)</tspan>
-<tspan x="340" y="190" class="cc">. </tspan><tspan class="key">Rust          </tspan><tspan> </tspan><tspan fill="#dea584">▊                   </tspan><tspan class="value">  234K</tspan><tspan class="cc"> (   2%)</tspan>
-<tspan x="340" y="210" class="cc">. </tspan><tspan class="key">Liquid        </tspan><tspan> </tspan><tspan fill="#67b8de">▍                   </tspan><tspan class="value">  108K</tspan><tspan class="cc"> ( 0.7%)</tspan>
+<tspan x="340" y="170" class="cc">. </tspan><tspan class="key">Rust          </tspan><tspan> </tspan><tspan fill="#dea584">█                   </tspan><tspan class="value">  319K</tspan><tspan class="cc"> (   2%)</tspan>
+<tspan x="340" y="190" class="cc">. </tspan><tspan class="key">JSON          </tspan><tspan> </tspan><tspan fill="#292929">▊                   </tspan><tspan class="value">  244K</tspan><tspan class="cc"> (   2%)</tspan>
+<tspan x="340" y="210" class="cc">. </tspan><tspan class="key">Liquid        </tspan><tspan> </tspan><tspan fill="#67b8de">▍                   </tspan><tspan class="value">  109K</tspan><tspan class="cc"> ( 0.7%)</tspan>
 <tspan x="340" y="230" class="cc">. </tspan><tspan class="key">Other         </tspan><tspan> </tspan><tspan fill="#616e7f">▌                   </tspan><tspan class="value">  165K</tspan><tspan class="cc"> (   1%)</tspan>
 </text>
 </svg>
