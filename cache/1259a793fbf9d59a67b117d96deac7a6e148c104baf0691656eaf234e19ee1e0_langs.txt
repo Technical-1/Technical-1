@@ -1,5 +1,5 @@
 1 "TypeScript" #3178c6 6081577
-2 "Python" #3572A5 3356790
+2 "Python" #3572A5 3436449
 3 "HTML" #e34c26 2516842
 4 "Swift" #F05138 1263835
 5 "JavaScript" #f1e05a 1079094
